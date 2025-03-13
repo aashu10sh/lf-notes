@@ -4,7 +4,7 @@ POST http://localhost:3000/v1/auth/sign-up HTTP/2.0
 Content-Type: application/json
 
 {
-    "username":"aashutosh",
+    "username":"aashutoshp",
     "password":"heroboy123",
     "name":"ap"
 }

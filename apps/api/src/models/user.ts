@@ -8,7 +8,8 @@ import {
 
 export const UserModel = pgTable("users", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
-  username: varchar({ length: 255 }).notNull(),
+  username: varchar({ length: 255 }).notNull().unique(),
+  name: varchar().notNull(),
   password: varchar({ length: 255 }).notNull(),
   deleted: boolean().default(false),
   createdAt: timestamp("created_at").notNull().defaultNow(),

@@ -1,0 +1,7 @@
+export enum NapkinErrors {
+  CONFLICT,
+  NOT_FOUND,
+  NOT_ENOUGH_PERMISSIONS,
+  EXPIRED,
+  UNKNOWN,
+}

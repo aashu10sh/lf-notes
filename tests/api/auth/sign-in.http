@@ -1,0 +1,9 @@
+
+
+POST http://localhost:3000/v1/auth/sign-in HTTP/2.0
+Content-Type: application/json
+
+{
+    "username":"aashutoshp",
+    "password":"heroboy123"
+}

@@ -6,7 +6,7 @@ import signUpValidator from "./entities/requests/signUp";
 
 const authRouter = new Hono();
 
-const authController = new AuthController(AuthService.NewAuthService());
+const authController = new AuthController(await AuthService.NewAuthService());
 
 authRouter.get("/sign-in", async (c) => {
   return c.text("Hello Auth");

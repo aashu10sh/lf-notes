@@ -1,8 +1,7 @@
 import { serve } from "@hono/node-server";
 import { Hono } from "hono";
-import { config } from "dotenv";
 import v1Router from "./modules/routers/v1";
-config({ path: ".env" });
+
 const app = new Hono();
 
 app.get("/", (c) => {
