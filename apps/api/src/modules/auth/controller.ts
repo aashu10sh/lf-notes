@@ -29,6 +29,7 @@ export default class AuthController {
               },
               403,
             );
+          case NapkinErrors.UNKNOWN:
           default:
             throw new HTTPException(500, {
               message: "unreachable",
