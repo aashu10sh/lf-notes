@@ -10,10 +10,10 @@ export const getCurrentUser = bearerAuth({
         const authService = await AuthService.NewAuthService();
         const user = await authService.me(payload.sub);
         context.set("user", user);
-        return true 
-       },
-      async (error) => {
-        return false 
+        return true;
+      },
+      async (_) => {
+        return false;
       },
     );
   },

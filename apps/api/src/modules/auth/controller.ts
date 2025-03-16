@@ -39,6 +39,8 @@ export default class AuthController {
     );
   };
 
+  
+
   signUp = async (c: Context) => {
     const userData = await c.req.json();
     const signInResult = await this.authService.signUp(userData);
@@ -72,15 +74,15 @@ export default class AuthController {
       },
     );
   };
+
+
   me = async (c: Context) => {
     const user = c.get("user");
-    console.log(user)
-    return c.json(
-      {
-        id: user.id,
-        username: user.username,
-        name: user.name,
-      },
-    );
+    console.log(user);
+    return c.json({
+      id: user.id,
+      username: user.username,
+      name: user.name,
+    });
   };
 }
