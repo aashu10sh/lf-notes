@@ -28,19 +28,14 @@ export default class AuthController {
     });
 
     if (!response.ok) {
-      // throw an error, modal/popup or whatever
       switch (response.status) {
         case 400:
         case 422:
-          console.log("client side error");
-          const error = await response.json();
-          console.log(error);
           return err({
             message: "Something is wrong with your request.",
           });
         default:
         case 500:
-          console.log("something went wrong on the server, try again later");
           return err({
             message: "Something Went Wrong with the server.",
           });
