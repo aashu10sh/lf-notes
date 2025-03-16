@@ -37,7 +37,6 @@ export default class AuthController {
         }
       },
     );
-
   };
 
   signUp = async (c: Context) => {
@@ -70,6 +69,17 @@ export default class AuthController {
               message: "unreachable",
             });
         }
+      },
+    );
+  };
+  me = async (c: Context) => {
+    const user = c.get("user");
+    console.log(user)
+    return c.json(
+      {
+        id: user.id,
+        username: user.username,
+        name: user.name,
       },
     );
   };

@@ -1,0 +1,5 @@
+
+
+GET http://localhost:3000/v1/auth/me HTTP/2.0
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhYXNodXRvc2hwIiwiaWF0IjoxNzQyMTEyNjQ3LCJleHAiOjE3NDIxOTkwNDd9.IYMHC4mEj6J39eXyHzi44Qv17Rs1J9Tt9G27VlRbdjA

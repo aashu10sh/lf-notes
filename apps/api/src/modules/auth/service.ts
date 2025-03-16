@@ -68,6 +68,10 @@ export default class AuthService {
     }
   }
 
+  async me(username: string) {
+    return await this.userRepository.fetchByUsername(username);
+  }
+
   static async NewAuthService() {
     return new AuthService(UserRepository.NewUserRepository());
   }

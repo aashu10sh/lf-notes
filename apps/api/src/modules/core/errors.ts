@@ -4,4 +4,5 @@ export enum NapkinErrors {
   NOT_ENOUGH_PERMISSIONS,
   EXPIRED,
   UNKNOWN,
+  INVALID_INPUT,
 }

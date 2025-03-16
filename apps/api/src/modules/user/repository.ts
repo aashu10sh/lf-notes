@@ -10,10 +10,7 @@ export default class UserRepository {
 
   async fetchByUsername(username: string) {
     const result = await this.db
-      .select({
-        password: UserModel.password,
-        id: UserModel.id,
-      })
+      .select()
       .from(UserModel)
       .where(eq(UserModel.username, username))
       .limit(1);
