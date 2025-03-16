@@ -8,6 +8,11 @@ const noteRouter = new Hono();
 
 const noteController = new NoteController(await NoteService.NewNoteService());
 
-noteRouter.post("/", getCurrentUser,noteCreationValidator, noteController.createNote);
+noteRouter.post(
+  "/",
+  getCurrentUser,
+  noteCreationValidator,
+  noteController.createNote,
+);
 
 export default noteRouter;
