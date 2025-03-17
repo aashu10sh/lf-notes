@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import AuthController from "../../lib/auth/controller";
 import toast from "react-hot-toast";
-import { redirect } from "react-router";
+import { useNavigate } from "react-router";
 
 interface SignUpForm {
   name: string;
@@ -17,6 +17,7 @@ export default function SignUpForm() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const redirect = useNavigate();
 
   useEffect(() => {
     async function isLoggedIn() {

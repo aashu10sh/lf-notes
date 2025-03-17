@@ -2,13 +2,15 @@ import type React from "react";
 import { useEffect, useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import AuthController from "../../lib/auth/controller";
-import { redirect } from "react-router";
 import toast from "react-hot-toast";
+import { useNavigate } from "react-router";
 
-export default function SignInForm() {
+export default function SignInPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+
+  const redirect = useNavigate();
 
   useEffect(() => {
     async function isLoggedIn() {
@@ -44,8 +46,6 @@ export default function SignInForm() {
     );
 
     console.log({ username, password });
-
-    // Handle form submission logic here
   };
 
   return (
