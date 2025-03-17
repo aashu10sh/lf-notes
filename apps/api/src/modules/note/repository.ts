@@ -49,6 +49,13 @@ export default class NoteRepository {
       .where(eq(NoteModel.id, noteId));
   }
 
+  async updateNote(noteId: number, newData: object) {
+    return await this.db
+      .update(NoteModel)
+      .set(newData)
+      .where(eq(NoteModel.id, noteId));
+  }
+
   static NewNoteRepository() {
     return new NoteRepository(Database.getInstance().getDb());
   }

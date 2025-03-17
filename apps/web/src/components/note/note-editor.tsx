@@ -6,7 +6,6 @@ import toast from "react-hot-toast";
 import NoteHeader from "./note-header";
 import NoteController, { Note } from "../../lib/note/controller";
 import "./note-editor.css";
-import { useNavigate } from "react-router";
 
 type NoteContent = {
   time: number;
@@ -23,7 +22,6 @@ export default function NoteEditor({ noteId }: NoteEditorProps) {
   const [note, setNote] = useState<Note | null>(null);
   const [title, setTitle] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(true);
-  const navigator = useNavigate();
 
   // Fetch note data when noteId changes
   useEffect(() => {
@@ -90,7 +88,7 @@ export default function NoteEditor({ noteId }: NoteEditorProps) {
           },
           onChange: async () => {
             console.log("Content changed");
-            // You could add debounced auto-save functionality here
+            //todo(aashutosh): automatic save the note here.
           },
         });
 
@@ -117,19 +115,28 @@ export default function NoteEditor({ noteId }: NoteEditorProps) {
   }, [note]);
 
   // Save note function (could be triggered by a save button)
-  const saveNote = async () => {
+  const saveNote = async (noteId: number) => {
     if (!note || !editorRef.current) return;
 
     try {
       const savedData = await editorRef.current.save();
+
       const noteController = new NoteController();
 
-      const updatedNote = {
-        ...note,
+      const dataToUpdate = {
+        content: JSON.stringify(savedData),
         title: title,
-        content: savedData,
-        updatedAt: new Date(),
       };
+      const updateResult = await noteController.updateNote(
+        noteId,
+        dataToUpdate,
+      );
+
+      if (updateResult.isErr()) {
+        toast.error("Failed to save note");
+        return;
+      }
+      console.log(updateResult.value);
 
       // Implement your save logic here
       // const result = await noteController.updateNote(updatedNote);
@@ -163,7 +170,7 @@ export default function NoteEditor({ noteId }: NoteEditorProps) {
       }
       toast.dismiss();
       toast.success("Note deleted successfully");
-      window.location.reload()
+      window.location.reload();
     } catch (error) {
       console.error("Error deleting note:", error);
       toast.dismiss();
@@ -202,8 +209,24 @@ export default function NoteEditor({ noteId }: NoteEditorProps) {
         <div id="editorjs" className="prose prose-invert max-w-none"></div>
       </div>
       {/* <button className="px-10">Delete Note</button> */}
-      <button type="button" onClick={() => {saveNote()}} className="mx-10 text-green-700 hover:text-white border border-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2 dark:border-green-500 dark:text-green-500 dark:hover:text-white dark:hover:bg-green-600 dark:focus:ring-green-800">Save Note</button>
-      <button type="button" onClick={() => {deleteNote(noteId)}} className="mx-2 text-red-700 hover:text-white border border-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2 dark:border-red-500 dark:text-red-500 dark:hover:text-white dark:hover:bg-red-600 dark:focus:ring-red-900">Delete Note</button>
+      <button
+        type="button"
+        onClick={() => {
+          saveNote(noteId);
+        }}
+        className="mx-10 text-green-700 hover:text-white border border-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2 dark:border-green-500 dark:text-green-500 dark:hover:text-white dark:hover:bg-green-600 dark:focus:ring-green-800"
+      >
+        Save Note
+      </button>
+      <button
+        type="button"
+        onClick={() => {
+          deleteNote(noteId);
+        }}
+        className="mx-2 text-red-700 hover:text-white border border-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2 dark:border-red-500 dark:text-red-500 dark:hover:text-white dark:hover:bg-red-600 dark:focus:ring-red-900"
+      >
+        Delete Note
+      </button>
     </div>
   );
 }

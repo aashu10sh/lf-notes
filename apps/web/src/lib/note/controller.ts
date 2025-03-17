@@ -96,12 +96,13 @@ export default class NoteController {
     return ok({});
   }
 
-  async updateNote(noteId: number, body: { content: NoteContent | string, title: string}) {
-
+  async updateNote(
+    noteId: number,
+    body: { content: NoteContent | string; title: string },
+  ) {
     if (typeof body.content == "object") {
       body.content = JSON.stringify(body.content);
     }
-
 
     const response = await fetch(`${BACKEND_URL}/api/v1/note/${noteId}`, {
       headers: {
@@ -121,5 +122,4 @@ export default class NoteController {
 
     return ok(data);
   }
-
 }

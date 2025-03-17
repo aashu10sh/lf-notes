@@ -45,6 +45,13 @@ export default class NoteService {
     return await this.noteRepository.deleteNote(noteId);
   }
 
+  async updateNote(
+    noteId: number,
+    newData: { title: string; content: string },
+  ) {
+    return this.noteRepository.updateNote(noteId, newData);
+  }
+
   static async NewNoteService() {
     return new NoteService(NoteRepository.NewNoteRepository());
   }

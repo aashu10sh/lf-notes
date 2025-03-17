@@ -3,6 +3,7 @@ import NoteController from "./controller";
 import NoteService from "./service";
 import { getCurrentUser } from "../auth/middlewares/getCurrentUser";
 import noteCreationValidator from "./entities/requests/note";
+import noteUpdateValidator from "./entities/requests/updateNote";
 
 const noteRouter = new Hono();
 
@@ -21,6 +22,11 @@ noteRouter.get("/:noteId", getCurrentUser, noteController.getOne);
 
 noteRouter.delete("/:noteId", getCurrentUser, noteController.deleteNote);
 
-noteRouter.put("/:noteId", getCurrentUser, noteController.updateNote);
+noteRouter.put(
+  "/:noteId",
+  getCurrentUser,
+  noteUpdateValidator,
+  noteController.updateNote,
+);
 
 export default noteRouter;
