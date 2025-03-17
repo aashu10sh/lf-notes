@@ -21,11 +21,9 @@ export default function DashboardPage() {
   const [isReady, setIsReady] = useState(false);
 
   const handleAddNote = async () => {
-    // Show loading state
     toast.loading("Creating new note...");
 
     try {
-      // Create an empty note structure
       const newNoteData: Note = {
         title: "Untitled Note",
         content: {
@@ -37,27 +35,21 @@ export default function DashboardPage() {
         updatedAt: new Date(),
       };
 
-      // Call the API to create the note
       const noteController = new NoteController();
       const result = await noteController.createNote(newNoteData);
 
-      // Handle API error
       if (result.isErr()) {
         toast.dismiss();
         toast.error("Failed to create new note");
         return;
       }
 
-      // Get the created note with server-generated ID
       const createdNote = newNoteData;
 
-      // Update state with the new note
       setNotes((prevNotes) => [createdNote, ...prevNotes]);
 
-      // Set the new note as active
       setActiveNote(createdNote);
 
-      // Show success message
       toast.dismiss();
       toast.success("New note created");
     } catch (error) {
@@ -97,6 +89,12 @@ export default function DashboardPage() {
 
       if (noteResult.isErr()) {
         toast.error("Something went wrong fetching notes.");
+        return;
+      }
+
+      if (noteResult.value.length <= 0){
+        setIsReady(true);
+        setNotes([]);
         return;
       }
 

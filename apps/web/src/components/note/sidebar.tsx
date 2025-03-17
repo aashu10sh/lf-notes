@@ -23,7 +23,7 @@ export default function Sidebar({
       {/* User welcome */}
       <div className="p-4 border-b border-zinc-800">
         <h2 className="text-lg font-medium">Welcome back,</h2>
-        <h1 className="text-xl font-bold">{username}</h1>
+        <h1 className="text-xl font-bold ">{username}</h1>
       </div>
 
       {/* Logout button */}

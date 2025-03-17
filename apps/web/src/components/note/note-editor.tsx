@@ -23,7 +23,8 @@ export default function NoteEditor({ noteId }: NoteEditorProps) {
   const [title, setTitle] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(true);
 
-  // Fetch note data when noteId changes
+
+
   useEffect(() => {
     const fetchNote = async () => {
       setLoading(true);
