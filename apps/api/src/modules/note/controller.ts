@@ -50,7 +50,32 @@ export default class NoteController {
 
   updateNote = async (c: Context) => {};
 
-  deleteNote = async (c: Context) => {};
+  deleteNote = async (c: Context) => {
+    const { noteId } = c.req.param();
+    const user = c.get("user");
+
+    const noteResult = await this.noteService.getNoteById(Number(noteId));
+
+    if (noteResult.isErr()) {
+      if (noteResult.error.type == NapkinErrors.NOT_FOUND) {
+        return c.json(noteResult.error, 404);
+      }
+    } else {
+      if (noteResult.value.authorId != user.id) {
+        return c.json(
+          {
+            message: "Not Permitted",
+            type: NapkinErrors.NOT_ENOUGH_PERMISSIONS,
+          },
+          403,
+        );
+      }
+
+      await this.noteService.deleteNote(Number(noteId));
+
+      return c.json({ updated: noteId }, 200);
+    }
+  };
 
   getOne = async (c: Context) => {
     const { noteId } = c.req.param();

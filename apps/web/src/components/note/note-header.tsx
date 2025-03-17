@@ -1,11 +1,13 @@
+import moment from "moment";
 import { useState } from "react";
 
 type NoteHeaderProps = {
   title: string;
   setTitle: (title: string) => void;
-  categories: string[];
-  lastUpdated: string;
-  created: string;
+  categories?: string[];
+  lastUpdated?: string;
+  created?: string;
+  // onDelete: (noteId: string) => void;
 };
 
 export default function NoteHeader({
@@ -47,7 +49,7 @@ export default function NoteHeader({
         <div className="p-4 border-r border-zinc-800">
           <div className="text-sm font-medium mb-2">Categories</div>
           <div className="flex flex-wrap gap-2">
-            {categories.map((category, index) => (
+            {categories?.map((category, index) => (
               <span
                 key={index}
                 className="px-3 py-1 bg-red-900 rounded-full text-sm"
@@ -61,7 +63,7 @@ export default function NoteHeader({
         {/* Last Updated */}
         <div className="p-4">
           <div className="text-sm font-medium mb-2">Last Updated</div>
-          <div>{lastUpdated}</div>
+          <div>{moment(lastUpdated).fromNow()}</div>
         </div>
       </div>
 
@@ -69,7 +71,7 @@ export default function NoteHeader({
       <div className="grid grid-cols-2 border-t border-zinc-800">
         <div className="p-4 border-r border-zinc-800">
           <div className="text-sm font-medium mb-2">Created</div>
-          <div>{created}</div>
+          <div>{moment(created).fromNow()}</div>
         </div>
 
         {/* Extra */}

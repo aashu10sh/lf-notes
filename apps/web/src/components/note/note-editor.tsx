@@ -1,9 +1,12 @@
 import { useEffect, useRef, useState } from "react";
-import NoteHeader from "./note-header";
 import EditorJS from "@editorjs/editorjs";
 import Header from "@editorjs/header";
 import Paragraph from "@editorjs/paragraph";
+import toast from "react-hot-toast";
+import NoteHeader from "./note-header";
+import NoteController, { Note } from "../../lib/note/controller";
 import "./note-editor.css";
+import { useNavigate } from "react-router";
 
 type NoteContent = {
   time: number;
@@ -11,28 +14,49 @@ type NoteContent = {
   version: string;
 };
 
-type Note = {
-  id: string;
-  title: string;
-  categories: string[];
-  lastUpdated: string;
-  created: string;
-  content: NoteContent;
-};
-
 type NoteEditorProps = {
-  note: Note;
+  noteId: number;
 };
 
-export default function NoteEditor({ note }: NoteEditorProps) {
+export default function NoteEditor({ noteId }: NoteEditorProps) {
   const editorRef = useRef<EditorJS | null>(null);
-  const [title, setTitle] = useState(note.title);
+  const [note, setNote] = useState<Note | null>(null);
+  const [title, setTitle] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(true);
+  const navigator = useNavigate();
+
+  // Fetch note data when noteId changes
+  useEffect(() => {
+    const fetchNote = async () => {
+      setLoading(true);
+
+      try {
+        const noteController = new NoteController();
+        const result = await noteController.getNote(noteId);
+
+        if (result.isErr()) {
+          toast.error("Failed to load note");
+          setLoading(false);
+          return;
+        }
+
+        const fetchedNote = result.value;
+        setNote(fetchedNote);
+        setTitle(fetchedNote.title);
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching note:", error);
+        toast.error("Something went wrong while loading the note");
+        setLoading(false);
+      }
+    };
+
+    fetchNote();
+  }, [noteId]);
 
   // Initialize or update EditorJS when the note changes
   useEffect(() => {
     if (!note) return;
-
-    setTitle(note.title);
 
     const initEditor = async () => {
       // Only destroy if the editor is ready
@@ -47,26 +71,33 @@ export default function NoteEditor({ note }: NoteEditorProps) {
 
       // Create a new editor instance
       try {
+        const content =
+          typeof note.content === "string"
+            ? (JSON.parse(note.content) as NoteContent)
+            : (note.content as NoteContent);
+
         const editor = new EditorJS({
           holder: "editorjs",
           tools: {
             header: Header,
             paragraph: Paragraph,
           },
-          data: note.content,
+          data: content,
           placeholder: "Let's write something...",
           autofocus: true,
           onReady: () => {
             console.log("Editor.js is ready");
           },
-          onChange: () => {
+          onChange: async () => {
             console.log("Content changed");
+            // You could add debounced auto-save functionality here
           },
         });
 
         editorRef.current = editor;
       } catch (error) {
         console.error("Error initializing editor:", error);
+        toast.error("Failed to initialize editor");
       }
     };
 
@@ -85,18 +116,94 @@ export default function NoteEditor({ note }: NoteEditorProps) {
     };
   }, [note]);
 
+  // Save note function (could be triggered by a save button)
+  const saveNote = async () => {
+    if (!note || !editorRef.current) return;
+
+    try {
+      const savedData = await editorRef.current.save();
+      const noteController = new NoteController();
+
+      const updatedNote = {
+        ...note,
+        title: title,
+        content: savedData,
+        updatedAt: new Date(),
+      };
+
+      // Implement your save logic here
+      // const result = await noteController.updateNote(updatedNote);
+
+      toast.success("Note saved successfully");
+    } catch (error) {
+      console.error("Error saving note:", error);
+      toast.error("Failed to save note");
+    }
+  };
+
+  const deleteNote = async (noteId: number) => {
+    if (
+      !window.confirm(
+        "Are you sure you want to delete this note? This action cannot be undone.",
+      )
+    ) {
+      return;
+    }
+
+    toast.loading("Deleting note...");
+
+    try {
+      const noteController = new NoteController();
+      const result = await noteController.deleteNote(noteId);
+
+      if (result.isErr()) {
+        toast.dismiss();
+        toast.error("Failed to delete note");
+        return;
+      }
+      toast.dismiss();
+      toast.success("Note deleted successfully");
+      window.location.reload()
+    } catch (error) {
+      console.error("Error deleting note:", error);
+      toast.dismiss();
+      toast.error("Something went wrong");
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex-1 flex items-center justify-center">
+        <p>Loading note...</p>
+      </div>
+    );
+  }
+
+  if (!note) {
+    return (
+      <div className="flex-1 flex items-center justify-center">
+        <p>Note not found</p>
+      </div>
+    );
+  }
+
   return (
     <div className="flex-1 overflow-y-auto">
       <NoteHeader
         title={title}
         setTitle={setTitle}
-        categories={note.categories}
-        lastUpdated={note.lastUpdated}
-        created={note.created}
+        categories={[]}
+        lastUpdated={note.updatedAt?.toString()}
+        created={note.createdAt?.toString()}
+        // onSave={saveNote}
+        // onDelete={deleteNote(noteId)}
       />
       <div className="p-8">
         <div id="editorjs" className="prose prose-invert max-w-none"></div>
       </div>
+      {/* <button className="px-10">Delete Note</button> */}
+      <button type="button" onClick={() => {saveNote()}} className="mx-10 text-green-700 hover:text-white border border-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2 dark:border-green-500 dark:text-green-500 dark:hover:text-white dark:hover:bg-green-600 dark:focus:ring-green-800">Save Note</button>
+      <button type="button" onClick={() => {deleteNote(noteId)}} className="mx-2 text-red-700 hover:text-white border border-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2 dark:border-red-500 dark:text-red-500 dark:hover:text-white dark:hover:bg-red-600 dark:focus:ring-red-900">Delete Note</button>
     </div>
   );
 }

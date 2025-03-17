@@ -1,7 +1,7 @@
 import { drizzle } from "drizzle-orm/node-postgres";
 import Database from "../../models/db";
 import { NoteModel } from "../../models/note";
-import { desc, eq } from "drizzle-orm";
+import { and, desc, eq } from "drizzle-orm";
 
 type NoteInsert = typeof NoteModel.$inferInsert;
 
@@ -26,7 +26,9 @@ export default class NoteRepository {
         extra: NoteModel.extra,
       })
       .from(NoteModel)
-      .where(eq(NoteModel.authorId, authorId))
+      .where(
+        and(eq(NoteModel.authorId, authorId), eq(NoteModel.deleted, false)),
+      )
       .orderBy(desc(NoteModel.updatedAt))
       .limit(take)
       .offset(offset);
@@ -36,8 +38,15 @@ export default class NoteRepository {
     return await this.db
       .select()
       .from(NoteModel)
-      .where(eq(NoteModel.id, id))
+      .where(and(eq(NoteModel.id, id), eq(NoteModel.deleted, false)))
       .limit(1);
+  }
+
+  async deleteNote(noteId: number) {
+    return await this.db
+      .update(NoteModel)
+      .set({ deleted: true })
+      .where(eq(NoteModel.id, noteId));
   }
 
   static NewNoteRepository() {

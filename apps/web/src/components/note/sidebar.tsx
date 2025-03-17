@@ -1,5 +1,6 @@
 import { Plus } from "lucide-react";
 import { Note } from "../../lib/note/controller";
+import { useNavigate } from "react-router";
 
 type SidebarProps = {
   notes: Note[];
@@ -16,6 +17,7 @@ export default function Sidebar({
   username,
   onAddNote,
 }: SidebarProps) {
+  const navigator = useNavigate();
   return (
     <div className="w-60 border-r border-zinc-800 flex flex-col">
       {/* User welcome */}
@@ -25,7 +27,12 @@ export default function Sidebar({
       </div>
 
       {/* Logout button */}
-      <button className="p-4 text-center border-b border-zinc-800 hover:bg-zinc-900 transition-colors">
+      <button
+        className="p-4 text-center border-b border-zinc-800 hover:bg-zinc-900 transition-colors"
+        onClick={() => {
+          navigator("/sign-out");
+        }}
+      >
         Log Out
       </button>
 
@@ -52,7 +59,7 @@ export default function Sidebar({
               activeNote.id === note.id ? "bg-zinc-900" : ""
             }`}
           >
-            <p className="truncate">{note.slug}</p>
+            <p className="truncate">{note.title}</p>
           </div>
         ))}
       </div>
