@@ -43,10 +43,40 @@ export default class AuthController {
     }
     console.log("success");
     const jsonData: SignUpResponse = await response.json();
-    
+
     localStorage.setItem("token", jsonData.token);
     return ok({
       message: "Succesfully Created!",
+    });
+  };
+
+  signIn = async (signInData: { username: string; password: string }) => {
+    const response = await fetch(`${BACKEND_URL}/api/v1/auth/sign-in`, {
+      body: JSON.stringify(signInData),
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      switch (response.status) {
+        case 403:
+          return err({
+            message: "Incorrect Credentials!",
+          });
+        default:
+        case 500:
+          return err({
+            message: "Somthing Went wrong with server.",
+          });
+      }
+    }
+    const jsonData: SignUpResponse = await response.json();
+    localStorage.setItem("token", jsonData.token);
+
+    return ok({
+      message: "Logged-In",
     });
   };
 

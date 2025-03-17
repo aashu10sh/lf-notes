@@ -6,15 +6,15 @@ import { Toaster } from "react-hot-toast";
 function App() {
   return (
     <>
-            <Toaster />
-    <Routes>
-      <Route path="/sign-up" element={<SignUpPage />} />
-      <Route path="/sign-in" />
-      <Route path="/sign-out" />
-      <Route path="/app" />
-      <Route path="/notes/search" />
-      <Route path="/notes/:noteId" />
-    </Routes>
+      <Toaster />
+      <Routes>
+        <Route path="/sign-up" element={<SignUpPage />} />
+        <Route path="/sign-in" />
+        <Route path="/sign-out" />
+        <Route path="/app" />
+        <Route path="/notes/search" />
+        <Route path="/notes/:noteId" />
+      </Routes>
     </>
   );
 }

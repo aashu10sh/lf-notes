@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import AuthController from "../../lib/auth/controller";
 import toast from "react-hot-toast";
-import { useNavigate } from "react-router";
+import { redirect } from "react-router";
 
 interface SignUpForm {
   name: string;
@@ -17,13 +17,12 @@ export default function SignUpForm() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const navigate = useNavigate();
 
   useEffect(() => {
     async function isLoggedIn() {
       const loggedIn = await AuthController.isLoggedIn();
       if (loggedIn) {
-        navigate("/");
+        redirect("/");
         return;
       }
       return;
@@ -46,7 +45,7 @@ export default function SignUpForm() {
     authResult.match(
       async (ok) => {
         toast.success(ok.message);
-        await navigate("/");
+        redirect("/");
       },
       (err) => {
         toast.error(err.message);
@@ -158,7 +157,7 @@ export default function SignUpForm() {
           <div className="text-center text-sm text-zinc-400">
             Already have an account?{" "}
             <a
-              href="#"
+              href="/sign-in"
               className="font-medium text-violet-400 hover:text-violet-300"
             >
               Sign in
