@@ -1,6 +1,8 @@
 import { Context } from "hono";
 import NoteService from "./service";
 import { slugify } from "./utils";
+import { randomUUID } from "crypto";
+import { NapkinErrors } from "../core/errors";
 
 export default class NoteController {
   constructor(private readonly noteService: NoteService) {}
@@ -20,7 +22,7 @@ export default class NoteController {
       title: valid.title,
       content: valid.content,
       extra: valid.extra,
-      slug: slugify(valid.title, String(user.id)),
+      slug: slugify(valid.title, String(randomUUID())),
     };
 
     const insertResult = await this.noteService.insertNote(insertData);
@@ -50,7 +52,49 @@ export default class NoteController {
 
   deleteNote = async (c: Context) => {};
 
-  getOne = async (c: Context) => {};
+  getOne = async (c: Context) => {
+    const { noteId } = c.req.param();
+    const user = c.get("user");
 
-  getMany = async (c: Context) => {};
+    const noteResult = await this.noteService.getNoteById(Number(noteId));
+
+    if (noteResult.isErr()) {
+      if (noteResult.error.type == NapkinErrors.NOT_FOUND) {
+        return c.json(noteResult.error, 404);
+      }
+    } else {
+      const note = noteResult.value;
+      if (note.authorId != user.id) {
+        return c.json(
+          {
+            message: "Not Permitted",
+            type: NapkinErrors.NOT_ENOUGH_PERMISSIONS,
+          },
+          403,
+        );
+      }
+      return c.json(note);
+    }
+  };
+
+  getMany = async (c: Context) => {
+    const user = c.get("user");
+
+    let { page, limit } = c.req.query();
+
+    if (!page) {
+      page = "1";
+    }
+
+    if (!limit) {
+      limit = "10";
+    }
+
+    const notes = await this.noteService.getNoteWithPagination(
+      user.id,
+      Number(page),
+      Number(limit),
+    );
+    return c.json(notes.value, 200);
+  };
 }

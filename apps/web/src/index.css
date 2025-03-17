@@ -1,0 +1,57 @@
+/* Dark mode styles for EditorJS */
+.codex-editor--dark {
+  color: #e0e0e0;
+  background-color: #1e1e1e;
+}
+
+/* Editor content area */
+.codex-editor--dark .ce-block {
+  color: #e0e0e0;
+}
+
+/* Editor toolbar */
+.codex-editor--dark .ce-toolbar__plus,
+.codex-editor--dark .ce-toolbar__settings-btn {
+  background-color: #2d2d2d;
+  color: #e0e0e0;
+}
+
+/* Toolbox (block menu) */
+.codex-editor--dark .ce-toolbox__button,
+.codex-editor--dark .ce-inline-toolbar,
+.codex-editor--dark .ce-conversion-toolbar,
+.codex-editor--dark .ce-inline-toolbar__dropdown,
+.codex-editor--dark .ce-conversion-tool {
+  background-color: #2d2d2d;
+  color: #e0e0e0;
+  border-color: #444;
+}
+
+/* Block selected state */
+.codex-editor--dark .ce-block--selected {
+  background-color: #2d2d2d;
+}
+
+/* Inline toolbar */
+.codex-editor--dark .ce-inline-tool,
+.codex-editor--dark .ce-conversion-toolbar__label,
+.codex-editor--dark .ce-inline-toolbar__dropdown-content {
+  color: #e0e0e0;
+}
+
+/* Paragraph */
+.codex-editor--dark .ce-paragraph {
+  color: #e0e0e0;
+}
+
+/* Headers */
+.codex-editor--dark .ce-header {
+  color: #e0e0e0;
+}
+
+/* Any additional block styles you need */
+.codex-editor--dark .cdx-list {
+  color: #e0e0e0;
+}
+
+/* Add styles for any other tools you're using */

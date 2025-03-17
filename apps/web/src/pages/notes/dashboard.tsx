@@ -2,8 +2,9 @@ import { useEffect, useState } from "react";
 import AuthController from "../../lib/auth/controller";
 import { redirect, useNavigate } from "react-router";
 import toast from "react-hot-toast";
-import NoteEditor from "../../components/note/note-editor";
+
 import Sidebar from "../../components/note/sidebar";
+import NoteController, { Note } from "../../lib/note/controller";
 
 interface User {
   username: string;
@@ -11,99 +12,33 @@ interface User {
   id: number;
 }
 
-
-// Mock data for initial state
-const initialNotes = [
-  {
-    id: "1",
-    title: "Hansi Flick's Barcelona",
-    preview: "Hansi Flick's Barce..",
-    categories: ["Football", "Life", "Game"],
-    lastUpdated: "2 days ago",
-    created: "7 days go",
-    content: {
-      time: 1635603431943,
-      blocks: [
-        {
-          type: "header",
-          data: {
-            text: "Heading 1",
-            level: 1,
-          },
-        },
-        {
-          type: "header",
-          data: {
-            text: "Heading 2",
-            level: 2,
-          },
-        },
-        {
-          type: "paragraph",
-          data: {
-            text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse eget lobortis lectus. Maecenas rutrum tortor enim, nec fringilla turpis laoreet a. Maecenas lacinia erat a viverra venenatis. Vestibulum pulvinar purus nec sagittis molestie. Proin malesuada cursus rutrum. Nulla feugiat risus id sodales semper. Fusce id elementum justo. Curabitur tristique lacinia elit nec facilisis. Etiam diam ex, viverra quis varius at, fringilla ac nisl.",
-          },
-        },
-      ],
-      version: "2.22.2",
-    },
-  },
-  {
-    id: "2",
-    title: "Pep Guardiola's City",
-    preview: "Pep Guardiola's Cit..",
-    categories: ["Football", "Tactics"],
-    lastUpdated: "5 days ago",
-    created: "10 days go",
-    content: {
-      time: 1635603431943,
-      blocks: [],
-      version: "2.22.2",
-    },
-  },
-  {
-    id: "3",
-    title: "Another Note is here",
-    preview: "Another Note is he..",
-    categories: ["General"],
-    lastUpdated: "1 week ago",
-    created: "2 weeks ago",
-    content: {
-      time: 1635603431943,
-      blocks: [],
-      version: "2.22.2",
-    },
-  },
-]
-
-
-
 export default function DashboardPage() {
   const [user, setUser] = useState({} as User);
   const navigator = useNavigate();
 
-  const [notes, setNotes] = useState(initialNotes)
-  const [activeNote, setActiveNote] = useState(notes[0])
-  const [username, setUsername] = useState("Aashutosh")
+  const [notes, setNotes] = useState([] as Note[]);
+  const [activeNote, setActiveNote] = useState(notes[0]);
 
   const handleAddNote = () => {
     const newNote = {
-      id: Date.now().toString(),
+      id: 0,
       title: "Untitled Note",
       preview: "Untitled Note",
       categories: [],
-      lastUpdated: "Just now",
-      created: "Just now",
+      updatedAt: new Date(),
+      createdAt: new Date(),
+      slug: "",
+      extra: {},
       content: {
         time: Date.now(),
         blocks: [],
         version: "2.22.2",
       },
-    }
+    };
 
-    setNotes([newNote, ...notes])
-    setActiveNote(newNote)
-  }
+    // setNotes([newNote, ...notes]);
+    // setActiveNote(newNote);
+  };
 
   useEffect(() => {
     async function isLoggedIn() {
@@ -128,20 +63,33 @@ export default function DashboardPage() {
       }
       setUser(self.value.data as User);
     }
+
+    async function getNotes() {
+      const noteController = new NoteController();
+      const noteResult = await noteController.getNotes();
+
+      if (noteResult.isErr()) {
+        toast.error("Something went wrong fetching notes.");
+        return;
+      }
+      setNotes(noteResult.value);
+      setActiveNote(noteResult.value[0]);
+    }
+
     getUser();
+    getNotes();
   }, []);
-  
+
   return (
     <div className="flex h-screen bg-black text-white">
       <Sidebar
         notes={notes}
         activeNote={activeNote}
         setActiveNote={setActiveNote}
-        username={username}
+        username={user.username}
         onAddNote={handleAddNote}
       />
-      <NoteEditor note={activeNote} />
+      {/* <NoteEditor note={activeNote} /> */}
     </div>
-  )
-
+  );
 }

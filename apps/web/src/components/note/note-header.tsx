@@ -1,15 +1,21 @@
-import { useState } from "react"
+import { useState } from "react";
 
 type NoteHeaderProps = {
-  title: string
-  setTitle: (title: string) => void
-  categories: string[]
-  lastUpdated: string
-  created: string
-}
+  title: string;
+  setTitle: (title: string) => void;
+  categories: string[];
+  lastUpdated: string;
+  created: string;
+};
 
-export default function NoteHeader({ title, setTitle, categories, lastUpdated, created }: NoteHeaderProps) {
-  const [isEditingTitle, setIsEditingTitle] = useState(false)
+export default function NoteHeader({
+  title,
+  setTitle,
+  categories,
+  lastUpdated,
+  created,
+}: NoteHeaderProps) {
+  const [isEditingTitle, setIsEditingTitle] = useState(false);
 
   return (
     <div className="border-b border-zinc-800">
@@ -26,7 +32,10 @@ export default function NoteHeader({ title, setTitle, categories, lastUpdated, c
             autoFocus
           />
         ) : (
-          <h1 className="text-4xl font-bold cursor-pointer" onClick={() => setIsEditingTitle(true)}>
+          <h1
+            className="text-4xl font-bold cursor-pointer"
+            onClick={() => setIsEditingTitle(true)}
+          >
             {title}
           </h1>
         )}
@@ -39,7 +48,10 @@ export default function NoteHeader({ title, setTitle, categories, lastUpdated, c
           <div className="text-sm font-medium mb-2">Categories</div>
           <div className="flex flex-wrap gap-2">
             {categories.map((category, index) => (
-              <span key={index} className="px-3 py-1 bg-red-900 rounded-full text-sm">
+              <span
+                key={index}
+                className="px-3 py-1 bg-red-900 rounded-full text-sm"
+              >
                 {category}
               </span>
             ))}
@@ -63,10 +75,11 @@ export default function NoteHeader({ title, setTitle, categories, lastUpdated, c
         {/* Extra */}
         <div className="p-4">
           <div className="text-sm font-medium mb-2">Extra</div>
-          <div className="text-sm text-zinc-400">This section will store JSON Data to add more columns like above</div>
+          <div className="text-sm text-zinc-400">
+            This section will store JSON Data to add more columns like above
+          </div>
         </div>
       </div>
     </div>
-  )
+  );
 }
-

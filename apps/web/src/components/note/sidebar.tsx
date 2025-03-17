@@ -1,20 +1,21 @@
-import { Plus } from "lucide-react"
-
-type Note = {
-  id: string
-  title: string
-  preview: string
-}
+import { Plus } from "lucide-react";
+import { Note } from "../../lib/note/controller";
 
 type SidebarProps = {
-  notes: Note[]
-  activeNote: Note
-  setActiveNote: (note: Note) => void
-  username: string
-  onAddNote: () => void
-}
+  notes: Note[];
+  activeNote: Note;
+  setActiveNote: (note: Note) => void;
+  username: string;
+  onAddNote: () => void;
+};
 
-export default function Sidebar({ notes, activeNote, setActiveNote, username, onAddNote }: SidebarProps) {
+export default function Sidebar({
+  notes,
+  activeNote,
+  setActiveNote,
+  username,
+  onAddNote,
+}: SidebarProps) {
   return (
     <div className="w-60 border-r border-zinc-800 flex flex-col">
       {/* User welcome */}
@@ -24,7 +25,9 @@ export default function Sidebar({ notes, activeNote, setActiveNote, username, on
       </div>
 
       {/* Logout button */}
-      <button className="p-4 text-center border-b border-zinc-800 hover:bg-zinc-900 transition-colors">Log Out</button>
+      <button className="p-4 text-center border-b border-zinc-800 hover:bg-zinc-900 transition-colors">
+        Log Out
+      </button>
 
       {/* Add new note button */}
       <button
@@ -49,19 +52,20 @@ export default function Sidebar({ notes, activeNote, setActiveNote, username, on
               activeNote.id === note.id ? "bg-zinc-900" : ""
             }`}
           >
-            <p className="truncate">{note.preview}</p>
+            <p className="truncate">{note.slug}</p>
           </div>
         ))}
       </div>
 
       {/* Navigation buttons */}
       <div className="flex border-t border-zinc-800">
-        <button className="flex-1 p-4 text-center hover:bg-zinc-900 transition-colors">&lt;</button>
+        <button className="flex-1 p-4 text-center hover:bg-zinc-900 transition-colors">
+          &lt;
+        </button>
         <button className="flex-1 p-4 text-center border-l border-zinc-800 hover:bg-zinc-900 transition-colors">
           &gt;
         </button>
       </div>
     </div>
-  )
+  );
 }
-

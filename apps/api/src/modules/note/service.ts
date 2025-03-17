@@ -21,6 +21,26 @@ export default class NoteService {
     }
   }
 
+  async getNoteWithPagination(autorId: number, page: number, limit: number) {
+    const offset = limit * (page - 1);
+
+    const data = await this.noteRepository.getNotes(offset, limit, autorId);
+    return ok(data);
+  }
+
+  async getNoteById(id: number) {
+    const data = await this.noteRepository.getNote(id);
+
+    if (data.length == 0) {
+      return err({
+        message: "Not Found",
+        type: NapkinErrors.NOT_FOUND,
+      });
+    }
+
+    return ok(data[0]);
+  }
+
   static async NewNoteService() {
     return new NoteService(NoteRepository.NewNoteRepository());
   }

@@ -1,75 +1,89 @@
-import { useEffect, useRef, useState } from "react"
-import NoteHeader from "./note-header" 
-import EditorJS from "@editorjs/editorjs"
-import Header from "@editorjs/header"  // Import from specific package
-import Paragraph from "@editorjs/paragraph"
+import { useEffect, useRef, useState } from "react";
+import NoteHeader from "./note-header";
+import EditorJS from "@editorjs/editorjs";
+import Header from "@editorjs/header";
+import Paragraph from "@editorjs/paragraph";
+import "./note-editor.css";
 
 type NoteContent = {
-  time: number
-  blocks: any[]
-  version: string
-}
+  time: number;
+  blocks: any[];
+  version: string;
+};
 
 type Note = {
-  id: string
-  title: string
-  categories: string[]
-  lastUpdated: string
-  created: string
-  content: NoteContent
-}
+  id: string;
+  title: string;
+  categories: string[];
+  lastUpdated: string;
+  created: string;
+  content: NoteContent;
+};
 
 type NoteEditorProps = {
-  note: Note
-}
+  note: Note;
+};
 
 export default function NoteEditor({ note }: NoteEditorProps) {
-  const editorRef = useRef<EditorJS | null>(null)
-  const [title, setTitle] = useState(note.title)
+  const editorRef = useRef<EditorJS | null>(null);
+  const [title, setTitle] = useState(note.title);
 
   // Initialize or update EditorJS when the note changes
   useEffect(() => {
-    if (!note) return
+    if (!note) return;
 
-    setTitle(note.title)
+    setTitle(note.title);
 
     const initEditor = async () => {
+      // Only destroy if the editor is ready
       if (editorRef.current) {
-        await editorRef.current.isReady
-        editorRef.current.destroy()
+        try {
+          await editorRef.current.isReady;
+          editorRef.current.destroy();
+        } catch (error) {
+          console.error("Error destroying editor:", error);
+        }
       }
 
-      const editor = new EditorJS({
-        holder: "editorjs",
-        tools: {
-          header: {
-            class: Header,
-            inlineToolbar: true,
-            config: {
-              levels: [1, 2, 3, 4],
-              defaultLevel: 1,
-            },
+      // Create a new editor instance
+      try {
+        const editor = new EditorJS({
+          holder: "editorjs",
+          tools: {
+            header: Header,
+            paragraph: Paragraph,
           },
-          paragraph: {
-            class: Paragraph,
-            inlineToolbar: true,
+          data: note.content,
+          placeholder: "Let's write something...",
+          autofocus: true,
+          onReady: () => {
+            console.log("Editor.js is ready");
           },
-        },
-        data: note.content,
-        placeholder: "Let's write something...",
-      })
+          onChange: () => {
+            console.log("Content changed");
+          },
+        });
 
-      editorRef.current = editor
-    }
+        editorRef.current = editor;
+      } catch (error) {
+        console.error("Error initializing editor:", error);
+      }
+    };
 
-    initEditor()
+    initEditor();
 
+    // Cleanup function
     return () => {
       if (editorRef.current) {
-        editorRef.current.destroy()
+        try {
+          editorRef.current.destroy();
+          editorRef.current = null;
+        } catch (error) {
+          console.error("Error destroying editor in cleanup:", error);
+        }
       }
-    }
-  }, [note])
+    };
+  }, [note]);
 
   return (
     <div className="flex-1 overflow-y-auto">
@@ -80,10 +94,9 @@ export default function NoteEditor({ note }: NoteEditorProps) {
         lastUpdated={note.lastUpdated}
         created={note.created}
       />
-
       <div className="p-8">
         <div id="editorjs" className="prose prose-invert max-w-none"></div>
       </div>
     </div>
-  )
+  );
 }
