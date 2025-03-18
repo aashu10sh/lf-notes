@@ -15,15 +15,14 @@ type NoteContent = {
 
 type NoteEditorProps = {
   noteId: number;
+  triggerRender: () => void;
 };
 
-export default function NoteEditor({ noteId }: NoteEditorProps) {
+export default function NoteEditor({ noteId, triggerRender }: NoteEditorProps) {
   const editorRef = useRef<EditorJS | null>(null);
   const [note, setNote] = useState<Note | null>(null);
   const [title, setTitle] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(true);
-
-
 
   useEffect(() => {
     const fetchNote = async () => {
@@ -130,15 +129,16 @@ export default function NoteEditor({ noteId }: NoteEditorProps) {
       };
       const updateResult = await noteController.updateNote(
         noteId,
-        dataToUpdate,
+        dataToUpdate
       );
 
       if (updateResult.isErr()) {
         toast.error("Failed to save note");
         return;
       }
-      console.log(updateResult.value);
+      console.log("upadte after post req " + updateResult.value);
 
+      triggerRender();
       // Implement your save logic here
       // const result = await noteController.updateNote(updatedNote);
 
@@ -152,7 +152,7 @@ export default function NoteEditor({ noteId }: NoteEditorProps) {
   const deleteNote = async (noteId: number) => {
     if (
       !window.confirm(
-        "Are you sure you want to delete this note? This action cannot be undone.",
+        "Are you sure you want to delete this note? This action cannot be undone."
       )
     ) {
       return;
@@ -203,13 +203,11 @@ export default function NoteEditor({ noteId }: NoteEditorProps) {
         categories={[]}
         lastUpdated={note.updatedAt?.toString()}
         created={note.createdAt?.toString()}
-        // onSave={saveNote}
-        // onDelete={deleteNote(noteId)}
+
       />
       <div className="p-8">
         <div id="editorjs" className="prose prose-invert max-w-none"></div>
       </div>
-      {/* <button className="px-10">Delete Note</button> */}
       <button
         type="button"
         onClick={() => {

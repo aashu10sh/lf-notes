@@ -15,10 +15,10 @@ export const NoteToCategory = pgTable("note_category_linked_table", {
 
 export const categoriesToNotes = relations(NoteToCategory, ({ one }) => ({
   category: one(CategoryModel, {
-    fields: [NoteToCategory.noteId],
+    fields: [NoteToCategory.categoryId],
     references: [CategoryModel.id],
   }),
-  user: one(NoteModel, {
+  note: one(NoteModel, {
     fields: [NoteToCategory.noteId],
     references: [NoteModel.id],
   }),

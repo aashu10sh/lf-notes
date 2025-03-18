@@ -18,8 +18,8 @@ categoryRouter.post(
   categoryController.createCategory,
 );
 
-// categoryRouter.get(
-//   "/:noteId",
-//   getCurrentUser,
-//   categoryController.getPostsCategories,
-// );
+categoryRouter.get(
+  "/:noteId",
+  getCurrentUser,
+  categoryController.getPostsCategories,
+);

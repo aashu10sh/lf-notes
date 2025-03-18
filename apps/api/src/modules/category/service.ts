@@ -27,6 +27,16 @@ export default class CategoryService {
     }
   }
 
+  async getCategoryOfPost(noteId: number, page: number, limit: number) {
+    const offset = limit * (page - 1);
+
+    const data = await this.categoryRepository.getCategoriesForPost(
+      noteId
+    );
+    
+    return ok(data);
+  }
+
   static async NewCategoryServices() {
     return new CategoryService(CategoryRepository.NewCategoryRepository());
   }

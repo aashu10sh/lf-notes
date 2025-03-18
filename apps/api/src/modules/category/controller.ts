@@ -60,7 +60,26 @@ export default class CategoryController {
       },
     );
   }
-  
 
-  async getPostsCategories(postId: number) {}
+  async getPostsCategories(c: Context) {
+    const user = c.get("user");
+    const { postId } = c.req.param();
+
+    let { page, limit } = c.req.query();
+
+    if (!page) {
+      page = "1";
+    }
+
+    if (!limit) {
+      limit = "10";
+    }
+
+    const categories = await this.categoryService.getCategoryOfPost(
+      postId,
+      Number(page),
+      Number(limit),
+    );
+    return c.json(categories.value, 200);
+  }
 }

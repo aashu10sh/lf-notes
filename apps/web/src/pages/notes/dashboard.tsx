@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import AuthController from "../../lib/auth/controller";
-import { redirect, useNavigate } from "react-router";
+import { useNavigate } from "react-router";
 import toast from "react-hot-toast";
 import Sidebar from "../../components/note/sidebar";
 import NoteController, { Note } from "../../lib/note/controller";
@@ -13,12 +13,18 @@ interface User {
 }
 
 export default function DashboardPage() {
-  const navigator = useNavigate();
+  const navigate = useNavigate();
 
   const [user, setUser] = useState({} as User);
   const [notes, setNotes] = useState([] as Note[]);
-  const [activeNote, setActiveNote] = useState(notes[0]);
+  const [activeNote, setActiveNote] = useState<Note | null>(null);
   const [isReady, setIsReady] = useState(false);
+  const [trigger, setTrigger] = useState(false);
+
+  const handleTrigger = () => {
+    console.log("triggered");
+    setTrigger(!trigger);
+  };
 
   const handleAddNote = async () => {
     toast.loading("Creating new note...");
@@ -37,7 +43,6 @@ export default function DashboardPage() {
 
       const noteController = new NoteController();
       const result = await noteController.createNote(newNoteData);
-
       if (result.isErr()) {
         toast.dismiss();
         toast.error("Failed to create new note");
@@ -45,9 +50,9 @@ export default function DashboardPage() {
       }
 
       const createdNote = newNoteData;
+      createdNote.id = result.value.created;
 
       setNotes((prevNotes) => [createdNote, ...prevNotes]);
-
       setActiveNote(createdNote);
 
       toast.dismiss();
@@ -59,53 +64,63 @@ export default function DashboardPage() {
     }
   };
 
-  useEffect(() => {
-    async function isLoggedIn() {
-      const loggedIn = await AuthController.isLoggedIn();
-      if (!loggedIn) {
-        redirect("/sign-in");
-        return;
-      }
+  async function getNotes() {
+    const noteController = new NoteController();
+    const noteResult = await noteController.getNotes();
+
+    if (noteResult.isErr()) {
+      toast.error("Something went wrong fetching notes.");
       return;
     }
 
-    isLoggedIn();
+    if (noteResult.value.length <= 0) {
+      setNotes([]);
+      setActiveNote(null);
+      setIsReady(true);
+      return;
+    }
 
-    async function getUser() {
+    setNotes(noteResult.value);
+    setActiveNote(noteResult.value[0]);
+    setIsReady(true);
+    setTrigger(false);
+  }
+  useEffect(() => {
+    async function checkAuthAndFetchData() {
+      const loggedIn = await AuthController.isLoggedIn();
+
+      if (!loggedIn) {
+        navigate("/sign-in");
+        return;
+      }
+
       const authController = new AuthController();
       const self = await authController.getSelf(localStorage.getItem("token")!);
 
       if (self.isErr()) {
         toast.error("Something went wrong fetching the user.");
-        navigator("/sign-in");
+        navigate("/sign-in");
         return;
       }
-      setUser(self.value.data as User);
+
+      const userData = self.value.data as User;
+      setUser(userData);
+
+      await getNotes();
     }
 
-    async function getNotes() {
-      const noteController = new NoteController();
-      const noteResult = await noteController.getNotes();
-
-      if (noteResult.isErr()) {
-        toast.error("Something went wrong fetching notes.");
-        return;
-      }
-
-      if (noteResult.value.length <= 0){
-        setIsReady(true);
-        setNotes([]);
-        return;
-      }
-
-      setNotes(noteResult.value);
-      setActiveNote(noteResult.value[0]);
-      setIsReady(true);
+    try {
+      checkAuthAndFetchData();
+    } catch (err) {
+      console.error(err);
     }
+  }, [navigate]);
 
-    getUser();
-    getNotes();
-  }, []);
+  useEffect(() => {
+    if (user.id && trigger) {
+      getNotes();
+    }
+  }, [trigger, user.id]);
 
   if (!isReady) {
     return <div>Loading...</div>;
@@ -115,12 +130,14 @@ export default function DashboardPage() {
     <div className="flex h-screen bg-black text-white">
       <Sidebar
         notes={notes}
-        activeNote={activeNote}
+        activeNote={activeNote!}
         setActiveNote={setActiveNote}
         username={user.username}
         onAddNote={handleAddNote}
       />
-      <NoteEditor noteId={activeNote?.id!} />
+      {activeNote && (
+        <NoteEditor noteId={activeNote.id!} triggerRender={handleTrigger} />
+      )}
     </div>
   );
 }
