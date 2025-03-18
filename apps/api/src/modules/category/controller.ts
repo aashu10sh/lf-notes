@@ -98,7 +98,12 @@ export default class CategoryController {
       data.categoryId,
     );
 
-    if (already.length <= 0) {
+    console.log('already');
+    console.log(already);
+    console.log(already.length)
+    debugger;
+
+    if (already.length != 0) {
       return c.json({ message: "Already in the Note!" }, 409);
     }
 
