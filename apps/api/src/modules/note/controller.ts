@@ -152,4 +152,23 @@ export default class NoteController {
     );
     return c.json(notes.value, 200);
   };
+
+  searchByCategories = async (c: Context) => {
+    const user: { id: number } = c.get("user");
+    // @ts-ignore
+    const valid: { categoryIds: number[] } = c.req.valid();
+
+    const notes = await this.noteService.searchByCategories(
+      user.id,
+      valid.categoryIds,
+    );
+
+    if (notes.isErr()) {
+      return c.json({
+        message: "Error Searching with Categories",
+      });
+    }
+
+    return c.json(notes.value, 200);
+  };
 }

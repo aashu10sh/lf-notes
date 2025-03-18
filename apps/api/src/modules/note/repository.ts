@@ -1,7 +1,9 @@
 import { drizzle } from "drizzle-orm/node-postgres";
 import Database from "../../models/db";
-import { and, desc, eq } from "drizzle-orm";
+import { and, desc, eq, inArray } from "drizzle-orm";
 import { NoteModel } from "../../models/note";
+import { NoteToCategory } from "../../models/note_to_category";
+import { CategoryModel } from "../../models/category";
 
 type NoteInsert = typeof NoteModel.$inferInsert;
 
@@ -54,6 +56,35 @@ export default class NoteRepository {
       .update(NoteModel)
       .set(newData)
       .where(eq(NoteModel.id, noteId));
+  }
+  async getNotesByCategoryIdsAndUserId(categoryIds: number[], userId: number) {
+    return await this.db
+      .select()
+      .from(NoteModel)
+      .where(
+        and(
+          inArray(
+            NoteModel.id,
+            this.db
+              .select({ noteId: NoteToCategory.noteId })
+              .from(NoteToCategory)
+              .innerJoin(
+                CategoryModel,
+                eq(NoteToCategory.categoryId, CategoryModel.id),
+              )
+              .where(
+                and(
+                  inArray(NoteToCategory.categoryId, categoryIds),
+                  eq(CategoryModel.authorId, userId),
+                  eq(CategoryModel.deleted, false),
+                ),
+              ),
+          ),
+          eq(NoteModel.authorId, userId),
+          eq(NoteModel.deleted, false),
+        ),
+      )
+      .orderBy(desc(NoteModel.updatedAt));
   }
 
   static NewNoteRepository() {

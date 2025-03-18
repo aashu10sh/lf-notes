@@ -26,7 +26,7 @@ export class ApiClient {
       const error = await response.json().catch(() => ({
         message: "An unexpected error occurred",
       }));
-      
+
       throw {
         message: error.message || "An unexpected error occurred",
         statusCode: response.status,
@@ -39,4 +39,4 @@ export class ApiClient {
   protected getUrl(endpoint: string): string {
     return `${BACKEND_URL}/api/v1/${endpoint}`;
   }
-} 
+}

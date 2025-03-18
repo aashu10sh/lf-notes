@@ -42,14 +42,18 @@ export default class NoteService {
   }
 
   async deleteNote(noteId: number) {
-    return await this.noteRepository.deleteNote(noteId);
+    return  ok(await this.noteRepository.deleteNote(noteId));
   }
 
   async updateNote(
     noteId: number,
     newData: { title: string; content: string },
   ) {
-    return this.noteRepository.updateNote(noteId, newData);
+    return ok(await this.noteRepository.updateNote(noteId, newData));
+  }
+
+  async searchByCategories(userId: number, categoryIds: number[]) {
+    return ok(await this.noteRepository.getNotesByCategoryIdsAndUserId(categoryIds, userId));
   }
 
   static async NewNoteService() {

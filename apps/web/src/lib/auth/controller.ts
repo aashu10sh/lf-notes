@@ -27,16 +27,15 @@ export interface AuthResponse {
 }
 
 export default class AuthController extends ApiClient {
-  async signUp(signUpData: SignUpData): Promise<Result<AuthResponse, ApiError>> {
+  async signUp(
+    signUpData: SignUpData,
+  ): Promise<Result<AuthResponse, ApiError>> {
     try {
-      const data = await fetch(
-        this.getUrl("auth/sign-up"),
-        {
-          method: "POST",
-          headers: this.getHeaders(false),
-          body: JSON.stringify(signUpData),
-        }
-      ).then(res => this.handleResponse<SignUpResponse>(res));
+      const data = await fetch(this.getUrl("auth/sign-up"), {
+        method: "POST",
+        headers: this.getHeaders(false),
+        body: JSON.stringify(signUpData),
+      }).then((res) => this.handleResponse<SignUpResponse>(res));
 
       localStorage.setItem("token", data.token);
       return ok({ message: "Successfully Created!" });
@@ -45,16 +44,15 @@ export default class AuthController extends ApiClient {
     }
   }
 
-  async signIn(signInData: SignInData): Promise<Result<AuthResponse, ApiError>> {
+  async signIn(
+    signInData: SignInData,
+  ): Promise<Result<AuthResponse, ApiError>> {
     try {
-      const data = await fetch(
-        this.getUrl("auth/sign-in"),
-        {
-          method: "POST",
-          headers: this.getHeaders(false),
-          body: JSON.stringify(signInData),
-        }
-      ).then(res => this.handleResponse<SignUpResponse>(res));
+      const data = await fetch(this.getUrl("auth/sign-in"), {
+        method: "POST",
+        headers: this.getHeaders(false),
+        body: JSON.stringify(signInData),
+      }).then((res) => this.handleResponse<SignUpResponse>(res));
 
       localStorage.setItem("token", data.token);
       return ok({ message: "Logged In" });
@@ -65,16 +63,13 @@ export default class AuthController extends ApiClient {
 
   async getSelf(token: string): Promise<Result<SelfResponse, ApiError>> {
     try {
-      const data = await fetch(
-        this.getUrl("auth/me"),
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      ).then(res => this.handleResponse<SelfResponse>(res));
+      const data = await fetch(this.getUrl("auth/me"), {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }).then((res) => this.handleResponse<SelfResponse>(res));
 
       return ok(data);
     } catch (error) {

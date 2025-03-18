@@ -16,10 +16,6 @@ function App() {
         <Route path="/sign-out" element={<SignOutPage />} />
 
         <Route path="/" element={<DashboardPage />} />
-        <Route path="/notes">
-          <Route path="search" />
-          <Route path=":noteId" />
-        </Route>
       </Routes>
     </>
   );

@@ -20,17 +20,17 @@ export default function DashboardPage() {
   const [activeNote, setActiveNote] = useState<Note | null>(null);
   const [isLoading, setIsLoading] = useState({
     notes: true,
-    user: true
+    user: true,
   });
   const [trigger, setTrigger] = useState(false);
 
   const handleTrigger = () => {
-    setTrigger(prev => !prev);
+    setTrigger((prev) => !prev);
   };
 
   const handleAddNote = async () => {
     if (!user) return;
-    
+
     toast.loading("Creating new note!");
 
     try {
@@ -56,10 +56,10 @@ export default function DashboardPage() {
 
       const createdNote = {
         ...newNoteData,
-        id: result.value.created
+        id: result.value.created,
       };
 
-      setNotes(prevNotes => [createdNote, ...prevNotes]);
+      setNotes((prevNotes) => [createdNote, ...prevNotes]);
       setActiveNote(createdNote);
       toast.dismiss();
       toast.success("New note created");
@@ -71,7 +71,7 @@ export default function DashboardPage() {
   };
 
   const getNotes = async () => {
-    setIsLoading(prev => ({ ...prev, notes: true }));
+    setIsLoading((prev) => ({ ...prev, notes: true }));
     try {
       const noteController = new NoteController();
       const noteResult = await noteController.getNotes();
@@ -86,7 +86,7 @@ export default function DashboardPage() {
     } catch (error) {
       toast.error("Failed to fetch notes");
     } finally {
-      setIsLoading(prev => ({ ...prev, notes: false }));
+      setIsLoading((prev) => ({ ...prev, notes: false }));
     }
   };
 
@@ -101,7 +101,9 @@ export default function DashboardPage() {
         }
 
         const authController = new AuthController();
-        const self = await authController.getSelf(localStorage.getItem("token")!);
+        const self = await authController.getSelf(
+          localStorage.getItem("token")!,
+        );
 
         if (self.isErr()) {
           toast.error("Something went wrong fetching the user.");
@@ -115,7 +117,7 @@ export default function DashboardPage() {
         console.error("Error in auth check:", error);
         navigate("/sign-in");
       } finally {
-        setIsLoading(prev => ({ ...prev, user: false }));
+        setIsLoading((prev) => ({ ...prev, user: false }));
       }
     };
 

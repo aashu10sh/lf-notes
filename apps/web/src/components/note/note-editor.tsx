@@ -159,7 +159,7 @@ export default function NoteEditor({ noteId, triggerRender }: NoteEditorProps) {
       };
       const updateResult = await noteController.updateNote(
         noteId,
-        dataToUpdate
+        dataToUpdate,
       );
 
       if (updateResult.isErr()) {
@@ -169,7 +169,6 @@ export default function NoteEditor({ noteId, triggerRender }: NoteEditorProps) {
       console.log("upadte after post req " + updateResult.value);
 
       triggerRender();
-
 
       toast.success("Note saved successfully");
     } catch (error) {
@@ -181,7 +180,7 @@ export default function NoteEditor({ noteId, triggerRender }: NoteEditorProps) {
   const deleteNote = async (noteId: number) => {
     if (
       !window.confirm(
-        "Are you sure you want to delete this note? This action cannot be undone."
+        "Are you sure you want to delete this note? This action cannot be undone.",
       )
     ) {
       return;

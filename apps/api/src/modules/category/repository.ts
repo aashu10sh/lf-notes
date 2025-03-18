@@ -2,9 +2,7 @@ import { drizzle } from "drizzle-orm/node-postgres";
 import Database from "../../models/db";
 import { CategoryModel } from "../../models/category";
 import { and, desc, eq } from "drizzle-orm";
-import {
-  NoteToCategory,
-} from "../../models/note_to_category";
+import { NoteToCategory } from "../../models/note_to_category";
 
 type CategoryInsert = typeof CategoryModel.$inferInsert;
 

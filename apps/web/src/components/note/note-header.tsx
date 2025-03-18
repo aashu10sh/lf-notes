@@ -32,19 +32,19 @@ export default function NoteHeader({
     removeCategory: false,
     createCategory: false,
   });
-  
+
   const categoryController = new CategoryController();
 
   const fetchCategories = async () => {
-    setIsLoading(prev => ({ ...prev, fetchCategories: true }));
+    setIsLoading((prev) => ({ ...prev, fetchCategories: true }));
     try {
       const result = await categoryController.getCategories();
       result.match(
         (categories) => setFetchedCategories(categories),
-        (error) => toast.error(error.message)
+        (error) => toast.error(error.message),
       );
     } finally {
-      setIsLoading(prev => ({ ...prev, fetchCategories: false }));
+      setIsLoading((prev) => ({ ...prev, fetchCategories: false }));
     }
   };
 
@@ -55,25 +55,28 @@ export default function NoteHeader({
   const addCategory = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedCategory) return;
-    
-    setIsLoading(prev => ({ ...prev, addCategory: true }));
+
+    setIsLoading((prev) => ({ ...prev, addCategory: true }));
     try {
-      const result = await categoryController.addCategoryToNote(Number(selectedCategory), id);
+      const result = await categoryController.addCategoryToNote(
+        Number(selectedCategory),
+        id,
+      );
       result.match(
         () => {
           triggerRender();
           setSelectedCategory("");
           toast.success("Category added successfully");
         },
-        (error) => toast.error(error.message)
+        (error) => toast.error(error.message),
       );
     } finally {
-      setIsLoading(prev => ({ ...prev, addCategory: false }));
+      setIsLoading((prev) => ({ ...prev, addCategory: false }));
     }
   };
 
   const removeCategory = async (catId: number) => {
-    setIsLoading(prev => ({ ...prev, removeCategory: true }));
+    setIsLoading((prev) => ({ ...prev, removeCategory: true }));
     try {
       const result = await categoryController.removeCategoryFromNote(catId, id);
       result.match(
@@ -81,30 +84,32 @@ export default function NoteHeader({
           triggerRender();
           toast.success("Category removed successfully");
         },
-        (error) => toast.error(error.message)
+        (error) => toast.error(error.message),
       );
     } finally {
-      setIsLoading(prev => ({ ...prev, removeCategory: false }));
+      setIsLoading((prev) => ({ ...prev, removeCategory: false }));
     }
   };
 
   const createCategory = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newCategory.trim()) return;
-    
-    setIsLoading(prev => ({ ...prev, createCategory: true }));
+
+    setIsLoading((prev) => ({ ...prev, createCategory: true }));
     try {
-      const result = await categoryController.createCategory(newCategory.trim());
+      const result = await categoryController.createCategory(
+        newCategory.trim(),
+      );
       result.match(
         async () => {
           await fetchCategories();
           setNewCategory("");
           toast.success("Category created successfully");
         },
-        (error) => toast.error(error.message)
+        (error) => toast.error(error.message),
       );
     } finally {
-      setIsLoading(prev => ({ ...prev, createCategory: false }));
+      setIsLoading((prev) => ({ ...prev, createCategory: false }));
     }
   };
 
