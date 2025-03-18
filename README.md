@@ -15,6 +15,9 @@ For Database, I have used postgresql because it fits our needs perfectly, it is 
 ## Authentication
 We're using JWT authentication with a single `access token` as our project is not of that scale that requires us to use access and refresh tokens. 
 
+## Error Handeling
+When writing exceptional software, it's important to handle errors gracefully, I am using the battle tested `neverthrow` library which allows us to treat errors as values instead of unchecked exceptions ( JS/TS default ) which makes our code explicit and is generally considered as the superior way of handeling errors in modern software development. ( Inspired from rust's Result<Ok,Err>)
+
 ## Setup
 
 1. We're using Turbo-Repo to manage both frontend and the backend here, although not it's original purpost it does excellently when running things in parallel.
