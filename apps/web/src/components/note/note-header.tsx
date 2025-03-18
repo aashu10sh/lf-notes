@@ -1,17 +1,11 @@
 import moment from "moment";
 import { useEffect, useState } from "react";
-import { BACKEND_URL } from "../../lib/constants";
+import CategoryController, { Category } from "../../lib/category/controller";
 
 type NoteHeaderProps = {
   title: string;
   setTitle: (title: string) => void;
-  categories?: {
-    authorId: number;
-    id: number;
-    createdAt: string;
-    updatedAt: string;
-    name: string;
-  }[];
+  categories?: Category[];
   lastUpdated?: string;
   created?: string;
   id: number;
@@ -29,90 +23,56 @@ export default function NoteHeader({
   created,
 }: NoteHeaderProps) {
   const [isEditingTitle, setIsEditingTitle] = useState(false);
-  const [fetchedCategories, setFetchedCategories] = useState<any>();
-  const [selectedCategory, setSelectedCategory] = useState<any>();
-  const [newCategory, setNewCategory] = useState<string>();
+  const [fetchedCategories, setFetchedCategories] = useState<Category[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<string>();
+  const [newCategory, setNewCategory] = useState<string>("");
+  const categoryController = new CategoryController();
+
   const fetchCategories = async () => {
-    const res = await fetch(`${BACKEND_URL}/api/v1/category`, {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-    });
-    if (!res.ok) {
-      const errorData = await res.json();
-      console.error(errorData);
+    const result = await categoryController.getCategories();
+    if (result.isOk()) {
+      setFetchedCategories(result.value);
+    } else {
+      console.error(result.error);
     }
-    const result = await res.json();
-    setFetchedCategories(result);
   };
+
   useEffect(() => {
     fetchCategories();
   }, []);
 
-  const postCategory = async (catId: number, noteId: number) => {
-    const res = await fetch(`${BACKEND_URL}/api/v1/category/${noteId}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-      body: JSON.stringify({ categoryId: Number(catId) }),
-    });
-
-    if (!res.ok) {
-      const errorData = await res.json();
-      console.error(errorData);
+  const addCategory = async () => {
+    if (!selectedCategory) return;
+    
+    const result = await categoryController.addCategoryToNote(Number(selectedCategory), id);
+    if (result.isOk()) {
+      triggerRender();
+    } else {
+      console.error(result.error);
     }
-    const result = await res.json();
-    console.log(result);
-    triggerRender();
   };
 
-  const deleteCategory = async (catId: number, noteId?: number) => {
-    const res = await fetch(`${BACKEND_URL}/api/v1/category/${noteId}`, {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-      body: JSON.stringify({ categoryId: Number(catId) }),
-    });
-    if (!res.ok) {
-      const errorData = await res.json();
-      console.log(errorData);
+  const removeCategory = async (catId: number) => {
+    const result = await categoryController.removeCategoryFromNote(catId, id);
+    if (result.isOk()) {
+      triggerRender();
+    } else {
+      console.error(result.error);
     }
-    const result = await res.json();
-    console.log("SUCCESS IN DELETEION", result);
-  };
-  const addCategory = () => {
-    console.log(selectedCategory);
-    postCategory(selectedCategory, id);
-  };
-
-  const removeCategory = (catId: number) => {
-    deleteCategory(catId, id);
-    triggerRender();
-    console.log("trigger");
   };
 
   const postNewCategory = async () => {
-    const res = await fetch(`${BACKEND_URL}/api/v1/category`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-      body: JSON.stringify({ name: newCategory }),
-    });
-    if (!res.ok) {
-      const erorrData = await res.json();
+    if (!newCategory) return;
+    
+    const result = await categoryController.createCategory(newCategory);
+    if (result.isOk()) {
+      await fetchCategories();
+      setNewCategory("");
+    } else {
+      console.error(result.error);
     }
-    const result = await res.json();
-    console.log(result);
-    fetchCategories();
-    setNewCategory("");
   };
+
   return (
     <div className="border-b border-zinc-800">
       {/* Title */}
@@ -144,11 +104,11 @@ export default function NoteHeader({
           <div className="text-sm font-medium mb-2">Categories</div>
           <div className="flex flex-wrap gap-2">
             {categories &&
-              categories?.map((category, index) => (
+              categories.map((category, index) => (
                 <span
                   key={index}
                   id="badge-dismiss-default"
-                  className={`inline-flex items-center px-2 py-1 me-2 text-sm font-medium text-blue-800 bg-blue-100 rounded-sm dark:bg-blue-900 dark:text-blue-300 $`}
+                  className="inline-flex items-center px-2 py-1 me-2 text-sm font-medium text-blue-800 bg-blue-100 rounded-sm dark:bg-blue-900 dark:text-blue-300"
                 >
                   {category.name}
                   <button
@@ -178,7 +138,6 @@ export default function NoteHeader({
                 </span>
               ))}
           </div>
-          <div></div>
         </div>
 
         {/* Last Updated */}
@@ -210,12 +169,12 @@ export default function NoteHeader({
                 onChange={(e) => setSelectedCategory(e.target.value)}
                 className="block py-2.5 px-0 w-full text-sm text-gray-500 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-gray-200 peer"
               >
-                {fetchedCategories &&
-                  fetchedCategories.map((category: any, index: number) => (
-                    <option key={index} id={category.id} value={category.id}>
-                      {category.name}
-                    </option>
-                  ))}
+                <option value="">Select a category</option>
+                {fetchedCategories.map((category, index) => (
+                  <option key={index} value={category.id}>
+                    {category.name}
+                  </option>
+                ))}
               </select>
               <button onClick={addCategory} type="submit">
                 Add

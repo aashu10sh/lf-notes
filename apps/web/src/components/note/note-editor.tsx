@@ -86,12 +86,10 @@ export default function NoteEditor({ noteId, triggerRender }: NoteEditorProps) {
     setTrigger(false);
   }, [trigger]);
 
-  // Initialize or update EditorJS when the note changes
   useEffect(() => {
     if (!note) return;
 
     const initEditor = async () => {
-      // Only destroy if the editor is ready
       if (editorRef.current) {
         try {
           await editorRef.current.isReady;
@@ -101,7 +99,6 @@ export default function NoteEditor({ noteId, triggerRender }: NoteEditorProps) {
         }
       }
 
-      // Create a new editor instance
       try {
         const content =
           typeof note.content === "string"
@@ -148,7 +145,6 @@ export default function NoteEditor({ noteId, triggerRender }: NoteEditorProps) {
     };
   }, [note]);
 
-  // Save note function (could be triggered by a save button)
   const saveNote = async (noteId: number) => {
     if (!note || !editorRef.current) return;
 
@@ -173,8 +169,7 @@ export default function NoteEditor({ noteId, triggerRender }: NoteEditorProps) {
       console.log("upadte after post req " + updateResult.value);
 
       triggerRender();
-      // Implement your save logic here
-      // const result = await noteController.updateNote(updatedNote);
+
 
       toast.success("Note saved successfully");
     } catch (error) {

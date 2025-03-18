@@ -27,7 +27,7 @@ export default function DashboardPage() {
   };
 
   const handleAddNote = async () => {
-    toast.loading("Creating new note...");
+    toast.loading("Creating new note!");
 
     try {
       const newNoteData: Note = {
@@ -43,6 +43,7 @@ export default function DashboardPage() {
 
       const noteController = new NoteController();
       const result = await noteController.createNote(newNoteData);
+
       if (result.isErr()) {
         toast.dismiss();
         toast.error("Failed to create new note");
@@ -50,12 +51,14 @@ export default function DashboardPage() {
       }
 
       const createdNote = newNoteData;
+
       createdNote.id = result.value.created;
 
       setNotes((prevNotes) => [createdNote, ...prevNotes]);
       setActiveNote(createdNote);
 
       toast.dismiss();
+      
       toast.success("New note created");
     } catch (error) {
       console.error("Error creating note:", error);
