@@ -115,7 +115,7 @@ export default function NoteHeader({
 
   return (
     <div className="border-b border-zinc-800">
-      {/* Title */}
+
       <div className="p-8 pb-4">
         {isEditingTitle ? (
           <input
@@ -137,9 +137,9 @@ export default function NoteHeader({
         )}
       </div>
 
-      {/* Metadata */}
+
       <div className="grid grid-cols-2 border-t border-zinc-800">
-        {/* Categories */}
+
         <div className="p-4 border-r border-zinc-800">
           <div className="text-sm font-medium mb-2">Categories</div>
           <div className="flex flex-wrap gap-2">
@@ -178,21 +178,21 @@ export default function NoteHeader({
           </div>
         </div>
 
-        {/* Last Updated */}
+
         <div className="p-4">
           <div className="text-sm font-medium mb-2">Last Updated</div>
           <div>{moment(lastUpdated).fromNow()}</div>
         </div>
       </div>
 
-      {/* Created */}
+
       <div className="grid grid-cols-2 border-t border-zinc-800">
         <div className="p-4 border-r border-zinc-800">
           <div className="text-sm font-medium mb-2">Created</div>
           <div>{moment(created).fromNow()}</div>
         </div>
 
-        {/* Category Management */}
+
         <div className="p-4">
           <div className="text-sm font-medium mb-2 flex flex-col gap-5">
             Add Categories
