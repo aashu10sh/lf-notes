@@ -187,7 +187,7 @@ export default function NoteEditor({ noteId }: NoteEditorProps) {
     );
   }
 
-  if (!note) {
+  if (!noteId || !note) {
     return (
       <div className="flex-1 flex items-center justify-center">
         <p>Note not found</p>

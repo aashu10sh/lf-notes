@@ -75,7 +75,6 @@ export default class AuthController {
 
   me = async (c: Context) => {
     const user = c.get("user");
-    console.log(user);
     return c.json({
       id: user.id,
       username: user.username,
