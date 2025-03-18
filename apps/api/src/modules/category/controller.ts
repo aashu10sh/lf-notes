@@ -88,8 +88,19 @@ export default class CategoryController {
 
   addCategoryToNote = async (c: Context) => {
     const user: { id: number } = c.get("user");
+
     const { noteId } = c.req.param();
+
     const data: { categoryId: number } = await c.req.json();
+
+    const already = await this.categoryService.getCategory(
+      Number(noteId),
+      data.categoryId,
+    );
+
+    if (already.length <= 0) {
+      return c.json({ message: "Already in the Note!" }, 409);
+    }
 
     const added = await this.categoryService.addToNote(
       Number(noteId),

@@ -39,6 +39,10 @@ export default class CategoryService {
     return ok(data);
   }
 
+  async getCategory(noteId: number, categoryId: number) {
+    return this.categoryRepository.getCategoryToNote(noteId, categoryId);
+  }
+
   async addToNote(noteId: number, categoryId: number) {
     const added = await this.categoryRepository.addToNote(noteId, categoryId);
     return ok(added);
