@@ -2,7 +2,9 @@ import { drizzle } from "drizzle-orm/node-postgres";
 import Database from "../../models/db";
 import { CategoryModel } from "../../models/category";
 import { and, desc, eq } from "drizzle-orm";
-import { categoriesToNotes, NoteToCategory } from "../../models/note_to_category";
+import {
+  NoteToCategory,
+} from "../../models/note_to_category";
 
 type CategoryInsert = typeof CategoryModel.$inferInsert;
 
@@ -36,7 +38,7 @@ export default class CategoryRepository {
 
   async getCategoryToNote(noteId: number, categoryId: number) {
     return await this.db
-      .select({id: NoteToCategory.id})
+      .select({ id: NoteToCategory.id })
       .from(NoteToCategory)
       .where(
         and(

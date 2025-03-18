@@ -6,6 +6,7 @@ import toast from "react-hot-toast";
 import NoteHeader from "./note-header";
 import NoteController, { Note } from "../../lib/note/controller";
 import "./note-editor.css";
+import { BACKEND_URL } from "../../lib/constants";
 
 type NoteContent = {
   time: number;
@@ -18,11 +19,36 @@ type NoteEditorProps = {
   triggerRender: () => void;
 };
 
+type CategoryProps = {
+  authorId: number;
+  id: number;
+  createdAt: string;
+  updatedAt: string;
+  name: string;
+};
+
 export default function NoteEditor({ noteId, triggerRender }: NoteEditorProps) {
   const editorRef = useRef<EditorJS | null>(null);
   const [note, setNote] = useState<Note | null>(null);
   const [title, setTitle] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(true);
+  const [categories, setCategories] = useState<CategoryProps[]>();
+  const [trigger, setTrigger] = useState(false);
+
+  const fetchNoteCategories = async () => {
+    const res = await fetch(`${BACKEND_URL}/api/v1/category/${noteId}`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    });
+    if (!res.ok) {
+      const errorData = await res.json();
+      console.error(errorData);
+    }
+    const result = await res.json();
+    setCategories(result);
+  };
 
   useEffect(() => {
     const fetchNote = async () => {
@@ -50,7 +76,15 @@ export default function NoteEditor({ noteId, triggerRender }: NoteEditorProps) {
     };
 
     fetchNote();
+    fetchNoteCategories();
   }, [noteId]);
+
+  useEffect(() => {
+    if (trigger) {
+      fetchNoteCategories();
+    }
+    setTrigger(false);
+  }, [trigger]);
 
   // Initialize or update EditorJS when the note changes
   useEffect(() => {
@@ -129,7 +163,7 @@ export default function NoteEditor({ noteId, triggerRender }: NoteEditorProps) {
       };
       const updateResult = await noteController.updateNote(
         noteId,
-        dataToUpdate,
+        dataToUpdate
       );
 
       if (updateResult.isErr()) {
@@ -152,7 +186,7 @@ export default function NoteEditor({ noteId, triggerRender }: NoteEditorProps) {
   const deleteNote = async (noteId: number) => {
     if (
       !window.confirm(
-        "Are you sure you want to delete this note? This action cannot be undone.",
+        "Are you sure you want to delete this note? This action cannot be undone."
       )
     ) {
       return;
@@ -195,14 +229,20 @@ export default function NoteEditor({ noteId, triggerRender }: NoteEditorProps) {
     );
   }
 
+  const handleTrigger = () => {
+    setTrigger(true);
+  };
+
   return (
-    <div className="flex-1 overflow-y-auto">
+    <div className=" min-h-screen flex-1 overflow-y-auto">
       <NoteHeader
+        id={noteId}
         title={title}
         setTitle={setTitle}
-        categories={[]}
+        categories={categories}
         lastUpdated={note.updatedAt?.toString()}
         created={note.createdAt?.toString()}
+        triggerRender={handleTrigger}
       />
       <div className="p-8">
         <div id="editorjs" className="prose prose-invert max-w-none"></div>
