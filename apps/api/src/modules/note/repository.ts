@@ -1,7 +1,7 @@
 import { drizzle } from "drizzle-orm/node-postgres";
 import Database from "../../models/db";
-import { NoteModel } from "../../models/note";
 import { and, desc, eq } from "drizzle-orm";
+import { NoteModel } from "../../models/note";
 
 type NoteInsert = typeof NoteModel.$inferInsert;
 
