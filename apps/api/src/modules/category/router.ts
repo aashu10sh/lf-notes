@@ -5,9 +5,13 @@ import CategoryController from "./controller";
 import CategoryService from "./service";
 
 const categoryRouter = new Hono();
+
 const categoryController = new CategoryController(
-  await CategoryService.NewCategoryServices(),
+   CategoryService.NewCategoryServices(),
 );
+
+
+console.log(categoryController);
 
 categoryRouter.get("/", getCurrentUser, categoryController.getUsersCategories);
 
@@ -23,3 +27,6 @@ categoryRouter.get(
   getCurrentUser,
   categoryController.getPostsCategories,
 );
+
+
+export default categoryRouter

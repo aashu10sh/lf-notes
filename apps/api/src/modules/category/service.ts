@@ -31,13 +31,15 @@ export default class CategoryService {
     const offset = limit * (page - 1);
 
     const data = await this.categoryRepository.getCategoriesForPost(
-      noteId
+      noteId,
+      offset,
+      limit
     );
-    
+
     return ok(data);
   }
 
-  static async NewCategoryServices() {
+  static NewCategoryServices() {
     return new CategoryService(CategoryRepository.NewCategoryRepository());
   }
 }

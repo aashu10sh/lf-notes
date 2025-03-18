@@ -16,7 +16,7 @@ export default class CategoryRepository {
       .returning({ id: CategoryModel.id });
   }
 
-  async getCategoriesForPost(postId: number) {
+  async getCategoriesForPost(postId: number, offset: number, limit: number) {
     const result = await this.db
       .select({
         id: CategoryModel.id,
@@ -27,7 +27,10 @@ export default class CategoryRepository {
       })
       .from(NoteToCategory)
       .innerJoin(CategoryModel, eq(NoteToCategory.categoryId, CategoryModel.id))
-      .where(eq(NoteToCategory.noteId, postId));
+      .where(eq(NoteToCategory.noteId, postId))
+      .offset(offset)
+      .limit(limit);
+  
 
     return result;
   }

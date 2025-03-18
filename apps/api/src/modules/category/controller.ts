@@ -4,7 +4,7 @@ import CategoryService from "./service";
 export default class CategoryController {
   constructor(private readonly categoryService: CategoryService) {}
 
-  async getUsersCategories(c: Context) {
+  getUsersCategories = async (c: Context) => {
     const user = c.get("user");
 
     let { page, limit } = c.req.query();
@@ -25,7 +25,7 @@ export default class CategoryController {
     return c.json(categories.value, 200);
   }
 
-  async createCategory(c: Context) {
+  createCategory = async (c: Context) => {
     const user: { id: number } = c.get("user");
 
     const valid: {
@@ -37,6 +37,7 @@ export default class CategoryController {
       name: valid.name,
       authorId: user.id,
     };
+
 
     const insertResult = await this.categoryService.createCategory(toInsert);
 
@@ -61,9 +62,9 @@ export default class CategoryController {
     );
   }
 
-  async getPostsCategories(c: Context) {
+  getPostsCategories = async (c: Context) => {
     const user = c.get("user");
-    const { postId } = c.req.param();
+    const { noteId } = c.req.param();
 
     let { page, limit } = c.req.query();
 
@@ -76,10 +77,15 @@ export default class CategoryController {
     }
 
     const categories = await this.categoryService.getCategoryOfPost(
-      postId,
+      Number(noteId),
       Number(page),
       Number(limit),
     );
+    if (categories.isErr()){
+      return c.json({message: "something went wrong"}, 500)
+    }
     return c.json(categories.value, 200);
   }
+
+  
 }
