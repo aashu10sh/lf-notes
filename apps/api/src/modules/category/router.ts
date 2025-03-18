@@ -3,15 +3,13 @@ import { getCurrentUser } from "../auth/middlewares/getCurrentUser";
 import categoryCreationValidator from "./entities/request/category";
 import CategoryController from "./controller";
 import CategoryService from "./service";
+import verifyNoteBody from "./entities/request/verifyNote";
 
 const categoryRouter = new Hono();
 
 const categoryController = new CategoryController(
-   CategoryService.NewCategoryServices(),
+  CategoryService.NewCategoryServices(),
 );
-
-
-console.log(categoryController);
 
 categoryRouter.get("/", getCurrentUser, categoryController.getUsersCategories);
 
@@ -25,8 +23,21 @@ categoryRouter.post(
 categoryRouter.get(
   "/:noteId",
   getCurrentUser,
-  categoryController.getPostsCategories,
+  categoryController.getNoteCategories,
 );
 
+categoryRouter.post(
+  "/:noteId",
+  getCurrentUser,
+  verifyNoteBody,
+  categoryController.addCategoryToNote,
+);
 
-export default categoryRouter
+categoryRouter.delete(
+  "/:noteId",
+  getCurrentUser,
+  verifyNoteBody,
+  categoryController.deleteCategoryFromNote,
+);
+
+export default categoryRouter;

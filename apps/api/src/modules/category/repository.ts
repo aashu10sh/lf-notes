@@ -30,9 +30,26 @@ export default class CategoryRepository {
       .where(eq(NoteToCategory.noteId, postId))
       .offset(offset)
       .limit(limit);
-  
 
     return result;
+  }
+
+  async addToNote(noteId: number, categoryId: number) {
+    return await this.db.insert(NoteToCategory).values({
+      noteId: noteId,
+      categoryId: categoryId,
+    });
+  }
+
+  async deleteFromNote(noteId: number, categoryId: number) {
+    return await this.db
+      .delete(NoteToCategory)
+      .where(
+        and(
+          eq(NoteToCategory.noteId, noteId),
+          eq(NoteToCategory.categoryId, categoryId),
+        ),
+      );
   }
 
   async getCategories(offset: number, take: number, authorId: number) {

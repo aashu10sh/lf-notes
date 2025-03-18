@@ -33,10 +33,23 @@ export default class CategoryService {
     const data = await this.categoryRepository.getCategoriesForPost(
       noteId,
       offset,
-      limit
+      limit,
     );
 
     return ok(data);
+  }
+
+  async addToNote(noteId: number, categoryId: number) {
+    const added = await this.categoryRepository.addToNote(noteId, categoryId);
+    return ok(added);
+  }
+
+  async deleteFromNote(noteId: number, categoryId: number) {
+    const deleted = await this.categoryRepository.deleteFromNote(
+      noteId,
+      categoryId,
+    );
+    return ok(deleted);
   }
 
   static NewCategoryServices() {

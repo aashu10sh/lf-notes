@@ -1,9 +1,9 @@
 
 
-POST http://localhost:3000/v1/category
+POST http://localhost:3000/v1/category/1
 Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ5dWpvbiIsImlhdCI6MTc0MjI3OTAzMywiZXhwIjoxNzQyMzY1NDMzfQ.F0QtX2VzeeU09CdE_7GPlvMzx1GcTsbuviBLHNAsIFg
 
 {
-    "name":"Balti Dagger"
+    "categoryId": 1
 }

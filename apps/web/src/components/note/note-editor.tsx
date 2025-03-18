@@ -129,7 +129,7 @@ export default function NoteEditor({ noteId, triggerRender }: NoteEditorProps) {
       };
       const updateResult = await noteController.updateNote(
         noteId,
-        dataToUpdate
+        dataToUpdate,
       );
 
       if (updateResult.isErr()) {
@@ -152,7 +152,7 @@ export default function NoteEditor({ noteId, triggerRender }: NoteEditorProps) {
   const deleteNote = async (noteId: number) => {
     if (
       !window.confirm(
-        "Are you sure you want to delete this note? This action cannot be undone."
+        "Are you sure you want to delete this note? This action cannot be undone.",
       )
     ) {
       return;
@@ -203,7 +203,6 @@ export default function NoteEditor({ noteId, triggerRender }: NoteEditorProps) {
         categories={[]}
         lastUpdated={note.updatedAt?.toString()}
         created={note.createdAt?.toString()}
-
       />
       <div className="p-8">
         <div id="editorjs" className="prose prose-invert max-w-none"></div>

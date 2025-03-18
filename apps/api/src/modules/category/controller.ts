@@ -23,7 +23,7 @@ export default class CategoryController {
       Number(limit),
     );
     return c.json(categories.value, 200);
-  }
+  };
 
   createCategory = async (c: Context) => {
     const user: { id: number } = c.get("user");
@@ -37,7 +37,6 @@ export default class CategoryController {
       name: valid.name,
       authorId: user.id,
     };
-
 
     const insertResult = await this.categoryService.createCategory(toInsert);
 
@@ -60,9 +59,9 @@ export default class CategoryController {
         );
       },
     );
-  }
+  };
 
-  getPostsCategories = async (c: Context) => {
+  getNoteCategories = async (c: Context) => {
     const user = c.get("user");
     const { noteId } = c.req.param();
 
@@ -81,11 +80,42 @@ export default class CategoryController {
       Number(page),
       Number(limit),
     );
-    if (categories.isErr()){
-      return c.json({message: "something went wrong"}, 500)
+    if (categories.isErr()) {
+      return c.json({ message: "something went wrong" }, 500);
     }
     return c.json(categories.value, 200);
-  }
+  };
 
-  
+  addCategoryToNote = async (c: Context) => {
+    const user: { id: number } = c.get("user");
+    const { noteId } = c.req.param();
+    const data: { categoryId: number } = await c.req.json();
+
+    const added = await this.categoryService.addToNote(
+      Number(noteId),
+      data.categoryId,
+    );
+
+    if (added.isErr()) {
+      return c.json({ message: "Error adding Category to Note" }, 500);
+    }
+
+    return c.json({ created: added.value.rowCount }, 201);
+  };
+
+  deleteCategoryFromNote = async (c: Context) => {
+    const user: { id: number } = c.get("user");
+    const { noteId } = c.req.param();
+    const data: { categoryId: number } = await c.req.json();
+
+    const removed = await this.categoryService.deleteFromNote(
+      Number(noteId),
+      data.categoryId,
+    );
+
+    if (removed.isErr()) {
+      return c.json({ message: "Error deleting Category to Note" }, 500);
+    }
+    return c.json({ created: removed.value.rowCount }, 201);
+  };
 }
