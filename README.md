@@ -1,84 +1,47 @@
-# Turborepo starter
+# Engineering Descisions
+> Aashutosh Pudasaini
 
-This Turborepo starter is maintained by the Turborepo core team.
+## Tech Stack
 
-## Using this example
+For Frontend, I have used React as it's the standard for building frontend interfaces. It's rich library collection and great documentation make it a valid choice.
 
-Run the following command:
+For Backend, I have used Hono JS, which is a express-like minimal backend framework designed for it's simplicity and effictiveness. It's also known for having many adaptors and being able to run almost everywhere. 
 
-```sh
-npx create-turbo@latest
-```
+For ORM, I have used Drizzle ORM because of the fine grained control it gives us when we're building our data repositories in our applicaitons, I could have used prisma here too but prisma requires me to learn it's specific `.schema` file and it does not scale very well and it's way of interating with the database is not very "sql like".
 
-## What's inside?
+For Database, I have used postgresql because it fits our needs perfectly, it is a relational database with great support for storing json data and it's very fast and known for being lightweight and scalable. Mysql and sqlite both would have been fine choices.
 
-This Turborepo includes the following packages/apps:
 
-### Apps and Packages
+## Authentication
+We're using JWT authentication with a single `access token` as our project is not of that scale that requires us to use access and refresh tokens. 
 
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
+## Setup
 
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
+1. We're using Turbo-Repo to manage both frontend and the backend here, although not it's original purpost it does excellently when running things in parallel.
 
-### Utilities
+2. At the base of the project, `napkin` folder. run `npm i` or `pnpm i` ( if you're cool:P ). This should install all packages required for all workspaces.
 
-This Turborepo has some additional tools already setup for you:
+3. Inside the `apps/api` folder, create a `.env` file and set `DATABASE_URL=...` to your Postgresql database url and set `JWT_SECRET=.. `. I rented my postgres db from neon.tech for convinience, I suggest you do the same.
 
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
+4. Finally Run `npm run dev` or `pnpm dev` to run the application in dev mode. The web app should work on port 5173.
 
-### Build
+5. visit localhost:5173
 
-To build all apps and packages, run the following command:
+## Interesting Fact.
 
-```
-cd my-turborepo
-pnpm build
-```
+You'll see that I have not set the CORS header handeling in my backend side, that's because I am using vite's development reverse proxy to handle that. It's very convinient and not many people know about it. The config can be found at `apps/web/vite.config.ts`
 
-### Develop
 
-To develop all apps and packages, run the following command:
 
-```
-cd my-turborepo
-pnpm dev
-```
 
-### Remote Caching
 
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
 
-Turborepo can use a technique known as [Remote Caching](https://turbo.build/repo/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
 
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
 
-```
-cd my-turborepo
-npx turbo login
-```
 
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
 
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
 
-```
-npx turbo link
-```
 
-## Useful Links
 
-Learn more about the power of Turborepo:
 
-- [Tasks](https://turbo.build/repo/docs/core-concepts/monorepos/running-tasks)
-- [Caching](https://turbo.build/repo/docs/core-concepts/caching)
-- [Remote Caching](https://turbo.build/repo/docs/core-concepts/remote-caching)
-- [Filtering](https://turbo.build/repo/docs/core-concepts/monorepos/filtering)
-- [Configuration Options](https://turbo.build/repo/docs/reference/configuration)
-- [CLI Usage](https://turbo.build/repo/docs/reference/command-line-reference)
+
