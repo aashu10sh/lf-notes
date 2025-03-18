@@ -4,7 +4,7 @@ import { useNavigate } from "react-router";
 
 type SidebarProps = {
   notes: Note[];
-  activeNote: Note;
+  activeNote: Note | null;
   setActiveNote: (note: Note) => void;
   username: string;
   onAddNote: () => void;
@@ -56,7 +56,7 @@ export default function Sidebar({
             key={note.id}
             onClick={() => setActiveNote(note)}
             className={`p-4 border-b border-zinc-800 cursor-pointer hover:bg-zinc-900 transition-colors ${
-              activeNote.id === note.id ? "bg-zinc-900" : ""
+              activeNote?.id === note.id ? "bg-zinc-900" : ""
             }`}
           >
             <p className="truncate">{note.title}</p>

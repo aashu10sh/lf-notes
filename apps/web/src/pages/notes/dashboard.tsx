@@ -15,18 +15,22 @@ interface User {
 export default function DashboardPage() {
   const navigate = useNavigate();
 
-  const [user, setUser] = useState({} as User);
-  const [notes, setNotes] = useState([] as Note[]);
+  const [user, setUser] = useState<User | null>(null);
+  const [notes, setNotes] = useState<Note[]>([]);
   const [activeNote, setActiveNote] = useState<Note | null>(null);
-  const [isReady, setIsReady] = useState(false);
+  const [isLoading, setIsLoading] = useState({
+    notes: true,
+    user: true
+  });
   const [trigger, setTrigger] = useState(false);
 
   const handleTrigger = () => {
-    console.log("triggered");
-    setTrigger(!trigger);
+    setTrigger(prev => !prev);
   };
 
   const handleAddNote = async () => {
+    if (!user) return;
+    
     toast.loading("Creating new note!");
 
     try {
@@ -50,15 +54,14 @@ export default function DashboardPage() {
         return;
       }
 
-      const createdNote = newNoteData;
+      const createdNote = {
+        ...newNoteData,
+        id: result.value.created
+      };
 
-      createdNote.id = result.value.created;
-
-      setNotes((prevNotes) => [createdNote, ...prevNotes]);
+      setNotes(prevNotes => [createdNote, ...prevNotes]);
       setActiveNote(createdNote);
-
       toast.dismiss();
-      
       toast.success("New note created");
     } catch (error) {
       console.error("Error creating note:", error);
@@ -67,75 +70,80 @@ export default function DashboardPage() {
     }
   };
 
-  async function getNotes() {
-    const noteController = new NoteController();
-    const noteResult = await noteController.getNotes();
-
-    if (noteResult.isErr()) {
-      toast.error("Something went wrong fetching notes.");
-      return;
-    }
-
-    if (noteResult.value.length <= 0) {
-      setNotes([]);
-      setActiveNote(null);
-      setIsReady(true);
-      return;
-    }
-
-    setNotes(noteResult.value);
-    setActiveNote(noteResult.value[0]);
-    setIsReady(true);
-    setTrigger(false);
-  }
-  useEffect(() => {
-    async function checkAuthAndFetchData() {
-      const loggedIn = await AuthController.isLoggedIn();
-
-      if (!loggedIn) {
-        navigate("/sign-in");
-        return;
-      }
-
-      const authController = new AuthController();
-      const self = await authController.getSelf(localStorage.getItem("token")!);
-
-      if (self.isErr()) {
-        toast.error("Something went wrong fetching the user.");
-        navigate("/sign-in");
-        return;
-      }
-
-      const userData = self.value.data as User;
-      setUser(userData);
-
-      await getNotes();
-    }
-
+  const getNotes = async () => {
+    setIsLoading(prev => ({ ...prev, notes: true }));
     try {
-      checkAuthAndFetchData();
-    } catch (err) {
-      console.error(err);
+      const noteController = new NoteController();
+      const noteResult = await noteController.getNotes();
+
+      if (noteResult.isErr()) {
+        toast.error("Something went wrong fetching notes.");
+        return;
+      }
+
+      setNotes(noteResult.value);
+      setActiveNote(noteResult.value[0] || null);
+    } catch (error) {
+      toast.error("Failed to fetch notes");
+    } finally {
+      setIsLoading(prev => ({ ...prev, notes: false }));
     }
+  };
+
+  // Initial auth check and user data fetch
+  useEffect(() => {
+    const checkAuthAndFetchData = async () => {
+      try {
+        const loggedIn = await AuthController.isLoggedIn();
+        if (!loggedIn) {
+          navigate("/sign-in");
+          return;
+        }
+
+        const authController = new AuthController();
+        const self = await authController.getSelf(localStorage.getItem("token")!);
+
+        if (self.isErr()) {
+          toast.error("Something went wrong fetching the user.");
+          navigate("/sign-in");
+          return;
+        }
+
+        setUser(self.value);
+        await getNotes();
+      } catch (error) {
+        console.error("Error in auth check:", error);
+        navigate("/sign-in");
+      } finally {
+        setIsLoading(prev => ({ ...prev, user: false }));
+      }
+    };
+
+    checkAuthAndFetchData();
   }, [navigate]);
 
+  // Handle note refresh on trigger
   useEffect(() => {
-    if (user.id && trigger) {
+    if (user && trigger) {
       getNotes();
     }
-  }, [trigger, user.id]);
+  }, [trigger, user]);
 
-  if (!isReady) {
-    return <div>Loading...</div>;
+  if (isLoading.user || isLoading.notes) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-black text-white">
+        <div className="text-xl">Loading...</div>
+      </div>
+    );
   }
 
   return (
     <div className="flex h-screen bg-black text-white">
       <Sidebar
         notes={notes}
-        activeNote={activeNote!}
+        activeNote={activeNote}
         setActiveNote={setActiveNote}
-        username={user.username}
+        username={user?.username || ""}
         onAddNote={handleAddNote}
       />
       {activeNote && (
