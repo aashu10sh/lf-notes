@@ -29,12 +29,38 @@ export default class CategoryController {
     const user: { id: number } = c.get("user");
 
     const valid: {
-      title: string;
-      content: string;
-      extra: string;
+      name: string;
       //@ts-ignore
     } = c.req.valid("json");
-  }
 
-  async getPostsCategories(postId: number){}
+    const toInsert = {
+      name: valid.name,
+      authorId: user.id,
+    };
+
+    const insertResult = await this.categoryService.createCategory(toInsert);
+
+    return insertResult.match(
+      (data) => {
+        return c.json(
+          {
+            created: data[0].id,
+          },
+          201,
+        );
+      },
+      (err) => {
+        return c.json(
+          {
+            message: "something went wrong",
+            type: err.type,
+          },
+          500,
+        );
+      },
+    );
+  }
+  
+
+  async getPostsCategories(postId: number) {}
 }

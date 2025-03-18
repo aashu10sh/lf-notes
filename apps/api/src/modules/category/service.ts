@@ -1,5 +1,6 @@
-import { ok } from "neverthrow";
+import { err, ok } from "neverthrow";
 import CategoryRepository from "./repository";
+import { NapkinErrors } from "../core/errors";
 
 export default class CategoryService {
   constructor(private readonly categoryRepository: CategoryRepository) {}
@@ -13,6 +14,17 @@ export default class CategoryService {
       autorId,
     );
     return ok(data);
+  }
+
+  async createCategory(noteData: { name: string; authorId: number }) {
+    try {
+      const inserted = await this.categoryRepository.insertCategory(noteData);
+      return ok(inserted);
+    } catch (e) {
+      return err({
+        type: NapkinErrors.UNKNOWN,
+      });
+    }
   }
 
   static async NewCategoryServices() {
